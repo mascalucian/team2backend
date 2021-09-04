@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -13,9 +14,9 @@ namespace team2backend.Controllers
     [Route("[controller]")]
     public class UdemyCourseController : ControllerBase
     {
-
+        [EnableCors("CorsApi")]
         [HttpGet]
-        [Route("{searchFor}/{numPages}")]
+        [Route("{searchFor}/{numPage}")]
         public IEnumerable<UdemyCourse> Get(string searchFor, int numPage)
         {
 
@@ -39,9 +40,10 @@ namespace team2backend.Controllers
             return Enumerable.Range(1, 12).Select(index =>
 
             {
-                var results = json["results"][index-1];
+                var results = json["results"][index - 1];
                 var instructors = results["visible_instructors"];
                 var instructorsLength = instructors.Count();
+                var jsonId = results.Value<long>("id");
                 var jsonTitle = results.Value<string>("title");
                 var jsonUrl = results.Value<string>("url");
                 var jsonPrice = results.Value<string>("price");
@@ -51,12 +53,13 @@ namespace team2backend.Controllers
                 return new UdemyCourse
                 {
                     Title = jsonTitle,
+                    Id = jsonId,
                     Url = jsonUrl,
                     Price = jsonPrice,
                     CourseImage = jsonCourseImage,
                     Headline = jsonHeadline,
                     Instructors = ConvertResponseToInstructors(instructors, instructorsLength)
-                }; 
+                };
             }).ToArray();
         }
 
@@ -66,9 +69,9 @@ namespace team2backend.Controllers
         {
             return Enumerable.Range(1, instructorsLength).Select(index =>
                     {
-                        var jsonInstructorTitle = instructors[index-1].Value<string>("job_title");
-                        var jsonInstructorName = instructors[index-1].Value<string>("display_name");
-                        var jsonInstructorPhoto = instructors[index-1].Value<string>("image_100x100");
+                        var jsonInstructorTitle = instructors[index - 1].Value<string>("job_title");
+                        var jsonInstructorName = instructors[index - 1].Value<string>("display_name");
+                        var jsonInstructorPhoto = instructors[index - 1].Value<string>("image_100x100");
                         return new Instructor
                         {
                             Name = jsonInstructorName,

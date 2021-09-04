@@ -32,6 +32,13 @@ namespace team2backend
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "team2backend", Version = "v1" });
             });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsApi",
+                    builder => builder.WithOrigins("http://localhost:8080")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,6 +54,7 @@ namespace team2backend
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors("CorsApi");
 
             app.UseAuthorization();
 
