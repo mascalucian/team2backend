@@ -27,16 +27,19 @@ namespace team2backend.Controllers
             var _apiToken = "Basic Q2thSXFVTURITzREcDk2WGMyejFMd2c5QmN3UzNldFJ2dEhIdUdVRTowaVMyYm9DR05xVm9UYXAwNDZUMXI5VXpKc1ZNWHh4dTRXT3dUUURoV3BhR3JuWkNScndGU2xMN1lyYWVnYXJCTE01UWN3cTVibTl0QW5WUlEyWWg2ME9FeHNWWlJkWG5WcndEdWIyNnlMZE8wSWY0aWVaOXNCV0RtYWpuN1FxNA==";
             request.AddHeader("Authorization", _apiToken);
             IRestResponse response = client.Execute(request);
-
-            return ConvertResponseToUdemyCourse(response.Content);
+            var json = JObject.Parse(response.Content);
+            if (json.Value<long>("count") == 0)
+            {
+                throw new ArgumentException(
+            $"No results found for {searchFor}.");
+            }
+            else return ConvertResponseToUdemyCourse(json);
 
         }
 
         [NonAction]
-        public IEnumerable<UdemyCourse> ConvertResponseToUdemyCourse(string content)
+        public IEnumerable<UdemyCourse> ConvertResponseToUdemyCourse(JObject json)
         {
-            var json = JObject.Parse(content);
-
             return Enumerable.Range(1, 12).Select(index =>
 
             {
