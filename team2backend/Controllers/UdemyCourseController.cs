@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -20,7 +21,7 @@ namespace team2backend.Controllers
         public IEnumerable<UdemyCourse> Get(string searchFor, int numPage)
         {
 
-            var client = new RestClient($"https://www.udemy.com/api-2.0/courses/?page={numPage}&search={searchFor}");
+            var client = new RestClient($"https://www.udemy.com/api-2.0/courses/?page={numPage}&search={HttpUtility.UrlEncode(searchFor)}");
             client.Timeout = -1;
             var request = new RestRequest(Method.GET);
             var _apiToken = "Basic Q2thSXFVTURITzREcDk2WGMyejFMd2c5QmN3UzNldFJ2dEhIdUdVRTowaVMyYm9DR05xVm9UYXAwNDZUMXI5VXpKc1ZNWHh4dTRXT3dUUURoV3BhR3JuWkNScndGU2xMN1lyYWVnYXJCTE01UWN3cTVibTl0QW5WUlEyWWg2ME9FeHNWWlJkWG5WcndEdWIyNnlMZE8wSWY0aWVaOXNCV0RtYWpuN1FxNA==";
