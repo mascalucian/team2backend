@@ -36,21 +36,17 @@ namespace team2backend.Controllers
         {
             var json = JObject.Parse(content);
 
-
-            var rng = new Random();
             return Enumerable.Range(1, numPages).Select(index =>
 
             {
                 var results = json["results"][index-1];
-                var instructor = results["visible_instructors"][0];
+                var instructors = results["visible_instructors"];
+                var instructorsLength = instructors.Count();
                 var jsonTitle = results.Value<string>("title");
                 var jsonUrl = results.Value<string>("url");
                 var jsonPrice = results.Value<string>("price");
                 var jsonCourseImage = results.Value<string>("image_240x135");
                 var jsonHeadline = results.Value<string>("headline");
-                var jsonInstructorTitle = instructor.Value<string>("job_title");
-                var jsonInstructorName = instructor.Value<string>("display_name");
-                var jsonInstructorPhoto = instructor.Value<string>("image_100x100");
 
                 return new UdemyCourse
                 {
@@ -59,15 +55,27 @@ namespace team2backend.Controllers
                     Price = jsonPrice,
                     CourseImage = jsonCourseImage,
                     Headline = jsonHeadline,
-                    Instructor = new Instructor
+                    Instructors = ConvertResponseToInstructors(instructors, instructorsLength)
+                }; 
+            }).ToArray();
+        }
+
+
+        [NonAction]
+        public IEnumerable<Instructor> ConvertResponseToInstructors(JToken instructors, int instructorsLength)
+        {
+            return Enumerable.Range(1, instructorsLength).Select(index =>
                     {
-                        Name = jsonInstructorName,
-                        Title = jsonInstructorTitle,
-                        Photo = jsonInstructorPhoto
-                    }
-                };
-            })
-            .ToArray();
+                        var jsonInstructorTitle = instructors[index-1].Value<string>("job_title");
+                        var jsonInstructorName = instructors[index-1].Value<string>("display_name");
+                        var jsonInstructorPhoto = instructors[index-1].Value<string>("image_100x100");
+                        return new Instructor
+                        {
+                            Name = jsonInstructorName,
+                            Title = jsonInstructorTitle,
+                            Photo = jsonInstructorPhoto
+                        };
+                    }).ToArray();
         }
     }
 }

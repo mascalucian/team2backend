@@ -17,6 +17,6 @@ namespace team2backend
 
         public string Headline { get; set; }
 
-        public Instructor Instructor { get; set; }
+        public IEnumerable<Instructor> Instructors { get; set; }
     }
 }
