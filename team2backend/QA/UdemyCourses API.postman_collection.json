@@ -1,0 +1,75 @@
+{
+	"info": {
+		"_postman_id": "11b4bc3d-0fad-4519-b715-f31fbdc2f676",
+		"name": "UdemyCourses API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetUdemyCoursesByNumberOfCoursesAndSearchKey",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic Q2thSXFVTURITzREcDk2WGMyejFMd2c5QmN3UzNldFJ2dEhIdUdVRTowaVMyYm9DR05xVm9UYXAwNDZUMXI5VXpKc1ZNWHh4dTRXT3dUUURoV3BhR3JuWkNScndGU2xMN1lyYWVnYXJCTE01UWN3cTVibTl0QW5WUlEyWWg2ME9FeHNWWlJkWG5WcndEdWIyNnlMZE8wSWY0aWVaOXNCV0RtYWpuN1FxNA==",
+						"type": "text"
+					},
+					{
+						"key": "Url",
+						"value": "https://principalgroup.udemy.com/",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "https://www.udemy.com/api-2.0/courses/?page=12&search=c%23#",
+					"protocol": "https",
+					"host": [
+						"www",
+						"udemy",
+						"com"
+					],
+					"path": [
+						"api-2.0",
+						"courses",
+						""
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "12"
+						},
+						{
+							"key": "search",
+							"value": "c#"
+						}
+					],
+					"hash": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUdemyCoursesFromYourAPI",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		}
+	]
+}
