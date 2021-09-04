@@ -31,7 +31,6 @@ namespace team2backend.Controllers
 
         }
 
-
         [NonAction]
         public IEnumerable<UdemyCourse> ConvertResponseToUdemyCourse(string content)
         {
@@ -69,9 +68,10 @@ namespace team2backend.Controllers
         {
             return Enumerable.Range(1, instructorsLength).Select(index =>
                     {
-                        var jsonInstructorTitle = instructors[index - 1].Value<string>("job_title");
-                        var jsonInstructorName = instructors[index - 1].Value<string>("display_name");
-                        var jsonInstructorPhoto = instructors[index - 1].Value<string>("image_100x100");
+                        var currentInstructor = instructors[index - 1];
+                        var jsonInstructorTitle = currentInstructor.Value<string>("job_title");
+                        var jsonInstructorName = currentInstructor.Value<string>("display_name");
+                        var jsonInstructorPhoto = currentInstructor.Value<string>("image_100x100");
                         return new Instructor
                         {
                             Name = jsonInstructorName,
