@@ -22,9 +22,12 @@ namespace team2backend.Controllers
             var client = new RestClient($"https://www.udemy.com/api-2.0/courses/?page={numPages}&search={searchFor}");
             client.Timeout = -1;
             var request = new RestRequest(Method.GET);
+            var _apiToken = "Basic Q2thSXFVTURITzREcDk2WGMyejFMd2c5QmN3UzNldFJ2dEhIdUdVRTowaVMyYm9DR05xVm9UYXAwNDZUMXI5VXpKc1ZNWHh4dTRXT3dUUURoV3BhR3JuWkNScndGU2xMN1lyYWVnYXJCTE01UWN3cTVibTl0QW5WUlEyWWg2ME9FeHNWWlJkWG5WcndEdWIyNnlMZE8wSWY0aWVaOXNCV0RtYWpuN1FxNA==";
+            request.AddHeader("Authorization", _apiToken);
             IRestResponse response = client.Execute(request);
 
             return ConvertResponseToUdemyCourse(response.Content, numPages);
+
         }
 
 
@@ -38,8 +41,8 @@ namespace team2backend.Controllers
             return Enumerable.Range(1, numPages).Select(index =>
 
             {
-                var results = json["results"];
-                var instructor = results["visible_instructors"];
+                var results = json["results"][index-1];
+                var instructor = results["visible_instructors"][0];
                 var jsonTitle = results.Value<string>("title");
                 var jsonUrl = results.Value<string>("url");
                 var jsonPrice = results.Value<string>("price");
