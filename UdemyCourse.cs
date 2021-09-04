@@ -13,14 +13,10 @@ namespace team2backend
 
         public string Price { get; set; }
 
-        public string Name { get; set; }
-
-        public string JobTitle { get; set; }
-
-        public string InstructorPhoto { get; set; }
-
         public string CourseImage { get; set; }
 
         public string Headline { get; set; }
+
+        public Instructor Instructor { get; set; }
     }
 }
