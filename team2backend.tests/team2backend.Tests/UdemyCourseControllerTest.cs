@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using team2backend.Controllers;
@@ -15,7 +16,7 @@ namespace team2backend.Tests
             var controller = new UdemyCourseController();
 
             // Act
-            var output = controller.ConvertResponseToUdemyCourse(content);
+            var output = controller.ConvertResponseToUdemyCourse(JObject.Parse(content), 12);
 
             // Assert
             var FirstCourse = ((UdemyCourse[])output)[0];
