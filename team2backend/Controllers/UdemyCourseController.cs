@@ -26,35 +26,6 @@ namespace team2backend.Controllers
             return GetResponseOrResponseError(json, numberOfCoursesPerSearch, numOfCoursesOnThisPage);
         }
 
-        private Response GetResponseOrResponseError(JObject json, long numberOfCoursesPerSearch, int numOfCoursesOnThisPage)
-        {
-            if (json.Value<string>("detail") == "Invalid page." || json.Value<string>("detail") == "Invalid page size")
-            {
-                return GetResponseError(true, false, numberOfCoursesPerSearch);
-            }
-            else if (numberOfCoursesPerSearch == 0)
-            {
-                return GetResponseError(false, true, numberOfCoursesPerSearch);
-            }
-            else return GetResponse(json, numOfCoursesOnThisPage, numberOfCoursesPerSearch);
-        }
-
-        private static int GetNumberOfCoursesOnThisPage(int numPage, long numberOfCoursesPerSearch, int lastPage)
-        {
-            if (numPage == lastPage)
-            {
-                if ((int)numberOfCoursesPerSearch % NUMBER_OF_COURSES_PER_PAGE == 0)
-                {
-                    return NUMBER_OF_COURSES_PER_PAGE;
-                }
-                else
-                {
-                    return (int)numberOfCoursesPerSearch % NUMBER_OF_COURSES_PER_PAGE;
-                }
-            }
-            else return NUMBER_OF_COURSES_PER_PAGE;
-        }
-
         private static string GetSearchResults(string searchFor, int numPage)
         {
             var client = new RestClient($"https://www.udemy.com/api-2.0/courses/?page={numPage}&search={HttpUtility.UrlEncode(searchFor)}");
@@ -73,32 +44,63 @@ namespace team2backend.Controllers
             {
                 return (int)numOfCourses / NUMBER_OF_COURSES_PER_PAGE;
             }
-            else return(int)numOfCourses / NUMBER_OF_COURSES_PER_PAGE + 1;
+            else return (int)numOfCourses / NUMBER_OF_COURSES_PER_PAGE + 1;
         }
 
-        private Response GetResponseError(bool wasOverFullFiled, bool noSearchFound, long numOfCourses)
+        private static int GetNumberOfCoursesOnThisPage(int numPage, long numberOfCoursesPerSearch, int lastPage)
+        {
+            if (numPage == lastPage)
+            {
+                if ((int)numberOfCoursesPerSearch % NUMBER_OF_COURSES_PER_PAGE == 0)
+                {
+                    return NUMBER_OF_COURSES_PER_PAGE;
+                }
+                else
+                {
+                    return (int)numberOfCoursesPerSearch % NUMBER_OF_COURSES_PER_PAGE;
+                }
+            }
+            else return NUMBER_OF_COURSES_PER_PAGE;
+        }
+
+        private Response GetResponseOrResponseError(JObject json, long numberOfCoursesPerSearch, int numOfCoursesOnThisPage)
+        {
+            var PageNotFound = json.Value<string>("detail");
+
+            if (PageNotFound == "Invalid page." || PageNotFound == "Invalid page size")
+            {
+                return GetResponseError(true, false);
+            }
+            else if (numberOfCoursesPerSearch == 0)
+            {
+                return GetResponseError(false, true);
+            }
+            else return GetResponse(json, numOfCoursesOnThisPage, numberOfCoursesPerSearch);
+        }
+
+        private Response GetResponseError(bool wasOverFullFiled, bool noSearchFound)
         {
             return new Response
             {
                 WasOverFullFiled = wasOverFullFiled,
                 NoSearchFound = noSearchFound,
-                NumberOfCoursesFound = numOfCourses,
+                NumberOfCoursesFound = 0,
                 Courses = Enumerable.Empty<UdemyCourse>()
             };
         }
 
-    private Response GetResponse(JObject json, int numOfCoursesPerThisPage, long numOfCourses)
-    {
-        return new Response
+        private Response GetResponse(JObject json, int numOfCoursesPerThisPage, long numOfCourses)
         {
-            WasOverFullFiled = false,
-            NoSearchFound = false,
-            NumberOfCoursesFound = numOfCourses,
-            Courses = ConvertResponseToUdemyCourse(json, numOfCoursesPerThisPage)
-        };
-    }
+            return new Response
+            {
+                WasOverFullFiled = false,
+                NoSearchFound = false,
+                NumberOfCoursesFound = numOfCourses,
+                Courses = ConvertResponseToUdemyCourse(json, numOfCoursesPerThisPage)
+            };
+        }
 
-    [NonAction]
+        [NonAction]
         public IEnumerable<UdemyCourse> ConvertResponseToUdemyCourse(JObject json, int numOfCoursesPerThisPage)
         {
             return Enumerable.Range(1, numOfCoursesPerThisPage).Select(index =>
@@ -126,22 +128,21 @@ namespace team2backend.Controllers
             }).ToArray();
         }
 
-        [NonAction]
-        public IEnumerable<Instructor> ConvertResponseToInstructors(JToken instructors, int instructorsLength)
+        private IEnumerable<Instructor> ConvertResponseToInstructors(JToken instructors, int instructorsLength)
         {
             return Enumerable.Range(1, instructorsLength).Select(index =>
-                    {
-                        var currentInstructor = instructors[index - 1];
-                        var jsonInstructorTitle = currentInstructor.Value<string>("job_title");
-                        var jsonInstructorName = currentInstructor.Value<string>("display_name");
-                        var jsonInstructorPhoto = currentInstructor.Value<string>("image_100x100");
-                        return new Instructor
-                        {
-                            Name = jsonInstructorName,
-                            Title = jsonInstructorTitle,
-                            Photo = jsonInstructorPhoto
-                        };
-                    }).ToArray();
+            {
+                var currentInstructor = instructors[index - 1];
+                var jsonInstructorTitle = currentInstructor.Value<string>("job_title");
+                var jsonInstructorName = currentInstructor.Value<string>("display_name");
+                var jsonInstructorPhoto = currentInstructor.Value<string>("image_100x100");
+                return new Instructor
+                {
+                    Name = jsonInstructorName,
+                    Title = jsonInstructorTitle,
+                    Photo = jsonInstructorPhoto
+                };
+            }).ToArray();
         }
     }
 }
