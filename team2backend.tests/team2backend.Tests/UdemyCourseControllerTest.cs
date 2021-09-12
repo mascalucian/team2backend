@@ -21,7 +21,6 @@ namespace team2backend.Tests
             var FirstCourse = ((UdemyCourse[])output)[0];
             Assert.Equal("C Programming For Beginners - Master the C Language", FirstCourse.Title);
             Assert.Equal("/course/c-programming-for-beginners-/", FirstCourse.Url);
-            Assert.Equal("€99.99", FirstCourse.Price);
         }
 
         private string LoadJsonFromResource(string jsonResponseOfApiFile)
