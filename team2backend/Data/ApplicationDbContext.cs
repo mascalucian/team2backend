@@ -12,5 +12,10 @@ namespace team2backend.Data
             : base(options)
         {
         }
+
+        public DbSet<team2backend.Models.Skill> Skills { get; set; }
+
+        public DbSet<team2backend.Models.Recomandation> Recomandations { get; set; }
+
     }
 }
