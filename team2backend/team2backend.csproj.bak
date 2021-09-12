@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
- 	<UserSecretsId>aspnet-team2backendMVC-163D523B-D5D4-4EFA-AD94-3FED2F015045</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
