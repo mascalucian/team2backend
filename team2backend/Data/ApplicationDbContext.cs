@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace team2backendMVC.Data
+namespace team2backend.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {

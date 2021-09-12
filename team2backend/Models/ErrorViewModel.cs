@@ -1,6 +1,6 @@
 using System;
 
-namespace team2backendMVC.Models
+namespace team2backend.Models
 {
     public class ErrorViewModel
     {
