@@ -26,13 +26,10 @@ namespace team2backend.Tests
 
             await controller.CreateNewSkill(new Skill
             {
-                Id = 2,
                 Name = "test",
                 Recomandations = null,
             }
             );
-
-          //  Assert.Equal("test", controller.GetSkillById(2).Name);
         }
 
         

@@ -46,7 +46,7 @@ namespace team2backend
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsApi",
-                    builder => builder.WithOrigins("http://localhost:8080")
+                    builder => builder.WithOrigins("http://localhost:8080", "https://team2-frontend.herokuapp.com")
                         .AllowAnyHeader()
                         .AllowAnyMethod());
             });
