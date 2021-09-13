@@ -7,7 +7,7 @@ namespace team2backend.Models
 {
     public class Recomandation
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         public int CourseId { get; set; }
 
@@ -16,5 +16,11 @@ namespace team2backend.Models
         public string AuthorName { get; set; }
 
         public string Feedback { get; set; }
+
+        //Navigation Properties
+        public int SkillId { get; set; }
+
+        public Skill Skill { get; set; }
+
     }
 }
