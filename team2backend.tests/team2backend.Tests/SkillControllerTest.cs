@@ -15,7 +15,7 @@ namespace team2backend.Tests
     {
         private readonly ApplicationDbContext _context;
         [Fact]
-        public async void SkillControllerAdd()
+        public /*async*/ void SkillControllerAdd()
         {
 
         SkillsController controller;
@@ -24,7 +24,7 @@ namespace team2backend.Tests
 
         controller = new SkillsController(_context);
 
-            await controller.CreateNewSkill(new Skill
+            /*await*/ controller.CreateNewSkill(new Skill
             {
                 Name = "test",
                 Recomandations = null,
