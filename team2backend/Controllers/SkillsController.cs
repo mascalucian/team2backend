@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using team2backend.Data;
 using team2backend.Models;
 
 namespace team2backend.Controllers
 {
+    [Route("[controller]")]
+    [ApiController]
     public class SkillsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,135 +17,70 @@ namespace team2backend.Controllers
             _context = context;
         }
 
-        // GET: Skills
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> GetAllSkills()
         {
-            return View(await _context.Skills.ToListAsync());
+            return Ok(await _context.Skills.ToListAsync());
         }
 
-        // GET: Skills/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSkillById(int id)
         {
-            if (id == null)
+            try
+            {
+                var skill = await _context.Skills
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                return Ok();
+            }
+            catch
             {
                 return NotFound();
             }
-
-            var skill = await _context.Skills
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (skill == null)
-            {
-                return NotFound();
-            }
-
-            return View(skill);
         }
 
-        // GET: Skills/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Skills/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Skill skill)
+        public async Task<IActionResult> CreateNewSkill([FromBody] Skill skill)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(skill);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Ok();
             }
-            return View(skill);
+            else
+            {
+                return BadRequest();
+            }
+            
         }
 
-        // GET: Skills/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Edit(int id, [FromBody] Skill updatedSkill)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var skill = await _context.Skills.FindAsync(id);
-            if (skill == null)
+            var skillToUpdate = await _context.Skills.FindAsync(id);
+
+            if (skillToUpdate != null)
+            {
+                skillToUpdate.Name = updatedSkill.Name;
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            else
             {
                 return NotFound();
             }
-            return View(skill);
         }
 
-        // POST: Skills/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Skill skill)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id != skill.Id)
-            {
-                return NotFound();
-            }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(skill);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SkillExists(skill.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(skill);
-        }
-
-        // GET: Skills/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var skill = await _context.Skills
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (skill == null)
-            {
-                return NotFound();
-            }
-
-            return View(skill);
-        }
-
-        // POST: Skills/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
             var skill = await _context.Skills.FindAsync(id);
             _context.Skills.Remove(skill);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Ok();
         }
 
-        private bool SkillExists(int id)
-        {
-            return _context.Skills.Any(e => e.Id == id);
-        }
     }
 }
