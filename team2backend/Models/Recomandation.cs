@@ -5,7 +5,7 @@
     /// </summary>
     public class Recomandation
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         public int CourseId { get; set; }
 
