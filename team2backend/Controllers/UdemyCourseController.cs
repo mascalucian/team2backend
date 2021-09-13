@@ -8,11 +8,21 @@ using RestSharp;
 
 namespace team2backend.Controllers
 {
+    /// <summary>
+    ///   <Udemy Controller. />
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
     public class UdemyCourseController : ControllerBase
     {
         private const int NUMBER_OF_COURSES_PER_PAGE = 12;
+
+        /// <summary>Gets the specified search for.</summary>
+        /// <param name="searchFor">The search for.</param>
+        /// <param name="numPage">The number page.</param>
+        /// <returns>
+        ///   <SearchResult  />
+        /// </returns>
         [EnableCors("CorsApi")]
         [HttpGet]
         [Route("{searchFor}/{numPage}")]
@@ -26,80 +36,12 @@ namespace team2backend.Controllers
             return GetResponseOrResponseError(json, numberOfCoursesPerSearch, numOfCoursesOnThisPage);
         }
 
-        private static string GetSearchResults(string searchFor, int numPage)
-        {
-            var client = new RestClient($"https://www.udemy.com/api-2.0/courses/?page={numPage}&search={HttpUtility.UrlEncode(searchFor)}");
-            client.Timeout = -1;
-            var request = new RestRequest(Method.GET);
-            var _apiToken = "Basic Q2thSXFVTURITzREcDk2WGMyejFMd2c5QmN3UzNldFJ2dEhIdUdVRTowaVMyYm9DR05xVm9UYXAwNDZUMXI5VXpKc1ZNWHh4dTRXT3dUUURoV3BhR3JuWkNScndGU2xMN1lyYWVnYXJCTE01UWN3cTVibTl0QW5WUlEyWWg2ME9FeHNWWlJkWG5WcndEdWIyNnlMZE8wSWY0aWVaOXNCV0RtYWpuN1FxNA==";
-            request.AddHeader("Authorization", _apiToken);
-            IRestResponse response = client.Execute(request);
-            var content = response.Content;
-            return content;
-        }
-
-        private static int GetLastPageIndex(long numOfCourses)
-        {
-            if (numOfCourses % NUMBER_OF_COURSES_PER_PAGE == 0)
-            {
-                return (int)numOfCourses / NUMBER_OF_COURSES_PER_PAGE;
-            }
-            else return (int)numOfCourses / NUMBER_OF_COURSES_PER_PAGE + 1;
-        }
-
-        private static int GetNumberOfCoursesOnThisPage(int numPage, long numberOfCoursesPerSearch, int lastPage)
-        {
-            if (numPage == lastPage)
-            {
-                if ((int)numberOfCoursesPerSearch % NUMBER_OF_COURSES_PER_PAGE == 0)
-                {
-                    return NUMBER_OF_COURSES_PER_PAGE;
-                }
-                else
-                {
-                    return (int)numberOfCoursesPerSearch % NUMBER_OF_COURSES_PER_PAGE;
-                }
-            }
-            else return NUMBER_OF_COURSES_PER_PAGE;
-        }
-
-        private Response GetResponseOrResponseError(JObject json, long numberOfCoursesPerSearch, int numOfCoursesOnThisPage)
-        {
-            var PageNotFound = json.Value<string>("detail");
-
-            if (PageNotFound == "Invalid page." || PageNotFound == "Invalid page size")
-            {
-                return GetResponseError(true, false);
-            }
-            else if (numberOfCoursesPerSearch == 0)
-            {
-                return GetResponseError(false, true);
-            }
-            else return GetResponse(json, numOfCoursesOnThisPage, numberOfCoursesPerSearch);
-        }
-
-        private Response GetResponseError(bool wasOverFullFiled, bool noSearchFound)
-        {
-            return new Response
-            {
-                WasOverFullFiled = wasOverFullFiled,
-                NoSearchFound = noSearchFound,
-                NumberOfCoursesFound = 0,
-                Courses = Enumerable.Empty<UdemyCourse>()
-            };
-        }
-
-        private Response GetResponse(JObject json, int numOfCoursesPerThisPage, long numOfCourses)
-        {
-            return new Response
-            {
-                WasOverFullFiled = false,
-                NoSearchFound = false,
-                NumberOfCoursesFound = numOfCourses,
-                Courses = ConvertResponseToUdemyCourse(json, numOfCoursesPerThisPage)
-            };
-        }
-
+        /// <summary>Converts the response to udemy course.</summary>
+        /// <param name="json">The json.</param>
+        /// <param name="numOfCoursesPerThisPage">The number of courses per this page.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [NonAction]
         public IEnumerable<UdemyCourse> ConvertResponseToUdemyCourse(JObject json, int numOfCoursesPerThisPage)
         {
@@ -123,12 +65,18 @@ namespace team2backend.Controllers
                     Price = jsonPrice,
                     CourseImage = jsonCourseImage,
                     Headline = jsonHeadline,
-                    Instructors = ConvertResponseToInstructors(instructors, instructorsLength)
+                    Instructors = ConvertResponseToInstructors(instructors, instructorsLength),
                 };
             }).ToArray();
         }
 
-        private IEnumerable<Instructor> ConvertResponseToInstructors(JToken instructors, int instructorsLength)
+        /// <summary>Converts the response to instructors.</summary>
+        /// <param name="instructors">The instructors.</param>
+        /// <param name="instructorsLength">Length of the instructors.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        public IEnumerable<Instructor> ConvertResponseToInstructors(JToken instructors, int instructorsLength)
         {
             return Enumerable.Range(1, instructorsLength).Select(index =>
             {
@@ -140,9 +88,126 @@ namespace team2backend.Controllers
                 {
                     Name = jsonInstructorName,
                     Title = jsonInstructorTitle,
-                    Photo = jsonInstructorPhoto
+                    Photo = jsonInstructorPhoto,
                 };
             }).ToArray();
+        }
+
+        /// <summary>Gets the search results.</summary>
+        /// <param name="searchFor">The search for.</param>
+        /// <param name="numPage">The number page.</param>
+        /// <returns>
+        ///   < SearchResult />
+        /// </returns>
+        private static string GetSearchResults(string searchFor, int numPage)
+        {
+            var client = new RestClient($"https://www.udemy.com/api-2.0/courses/?page={numPage}&search={HttpUtility.UrlEncode(searchFor)}");
+            client.Timeout = -1;
+            var request = new RestRequest(Method.GET);
+            var _apiToken = "Basic Q2thSXFVTURITzREcDk2WGMyejFMd2c5QmN3UzNldFJ2dEhIdUdVRTowaVMyYm9DR05xVm9UYXAwNDZUMXI5VXpKc1ZNWHh4dTRXT3dUUURoV3BhR3JuWkNScndGU2xMN1lyYWVnYXJCTE01UWN3cTVibTl0QW5WUlEyWWg2ME9FeHNWWlJkWG5WcndEdWIyNnlMZE8wSWY0aWVaOXNCV0RtYWpuN1FxNA==";
+            request.AddHeader("Authorization", _apiToken);
+            IRestResponse response = client.Execute(request);
+            var content = response.Content;
+            return content;
+        }
+
+        /// <summary>Gets the last index of the page.</summary>
+        /// <param name="numOfCourses">The number of courses.</param>
+        /// <returns>LastPage.</returns>
+        private static int GetLastPageIndex(long numOfCourses)
+        {
+            if (numOfCourses % NUMBER_OF_COURSES_PER_PAGE == 0)
+            {
+                return (int)numOfCourses / NUMBER_OF_COURSES_PER_PAGE;
+            }
+            else
+            {
+                return (int)numOfCourses / NUMBER_OF_COURSES_PER_PAGE + 1;
+            }
+        }
+
+        /// <summary>Gets the number of courses on this page.</summary>
+        /// <param name="numPage">The number page.</param>
+        /// <param name="numberOfCoursesPerSearch">The number of courses per search.</param>
+        /// <param name="lastPage">The last page.</param>
+        /// <returns>Number of courses.</returns>
+        private static int GetNumberOfCoursesOnThisPage(int numPage, long numberOfCoursesPerSearch, int lastPage)
+        {
+            if (numPage == lastPage)
+            {
+                if ((int)numberOfCoursesPerSearch % NUMBER_OF_COURSES_PER_PAGE == 0)
+                {
+                    return NUMBER_OF_COURSES_PER_PAGE;
+                }
+                else
+                {
+                    return (int)numberOfCoursesPerSearch % NUMBER_OF_COURSES_PER_PAGE;
+                }
+            }
+            else
+            {
+                return NUMBER_OF_COURSES_PER_PAGE;
+            }
+        }
+
+        /// <summary>Gets the response or response error.</summary>
+        /// <param name="json">The json.</param>
+        /// <param name="numberOfCoursesPerSearch">The number of courses per search.</param>
+        /// <param name="numOfCoursesOnThisPage">The number of courses on this page.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        private Response GetResponseOrResponseError(JObject json, long numberOfCoursesPerSearch, int numOfCoursesOnThisPage)
+        {
+            var PageNotFound = json.Value<string>("detail");
+
+            if (PageNotFound == "Invalid page." || PageNotFound == "Invalid page size")
+            {
+                return GetResponseError(true, false);
+            }
+            else if (numberOfCoursesPerSearch == 0)
+            {
+                return GetResponseError(false, true);
+            }
+            else
+            {
+                return GetResponse(json, numOfCoursesOnThisPage, numberOfCoursesPerSearch);
+            }
+        }
+
+        /// <summary>Gets the response error.</summary>
+        /// <param name="wasOverFullFiled">if set to <c>true</c> [was over full filed].</param>
+        /// <param name="noSearchFound">if set to <c>true</c> [no search found].</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        private Response GetResponseError(bool wasOverFullFiled, bool noSearchFound)
+        {
+            return new Response
+            {
+                WasOverFullFiled = wasOverFullFiled,
+                NoSearchFound = noSearchFound,
+                NumberOfCoursesFound = 0,
+                Courses = Enumerable.Empty<UdemyCourse>(),
+            };
+        }
+
+        /// <summary>Gets the response.</summary>
+        /// <param name="json">The json.</param>
+        /// <param name="numOfCoursesPerThisPage">The number of courses per this page.</param>
+        /// <param name="numOfCourses">The number of courses.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        private Response GetResponse(JObject json, int numOfCoursesPerThisPage, long numOfCourses)
+        {
+            return new Response
+            {
+                WasOverFullFiled = false,
+                NoSearchFound = false,
+                NumberOfCoursesFound = numOfCourses,
+                Courses = ConvertResponseToUdemyCourse(json, numOfCoursesPerThisPage),
+            };
         }
     }
 }

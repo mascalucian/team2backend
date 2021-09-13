@@ -1,38 +1,52 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using team2backend.Data;
-using team2backend.Models;
-
-namespace team2backend.Controllers
+﻿namespace team2backend.Controllers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using team2backend.Data;
+    using team2backend.Models;
+
+    /// <summary>
+    ///   RecomandationController />.
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     public class RecomandationsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
+        /// <summary>Initializes a new instance of the <see cref="RecomandationsController" /> class.</summary>
+        /// <param name="context">The context.</param>
         public RecomandationsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>Gets the recomandations.</summary>
+        /// <param name="skillId">The skill identifier.</param>
+        /// <returns>
+        ///   ActionResult.
+        /// </returns>
         [HttpGet("{SkillId}")]
-        public async Task<IActionResult> GetRecomandations(int SkillId)
+        public async Task<IActionResult> GetRecomandations(int skillId)
         {
-            var recomandations = _context.Recomandations.Where(sId => sId.SkillId == SkillId)
+            var recomandations = _context.Recomandations.Where(sId => sId.SkillId == skillId)
                 .Distinct().ToListAsync();
             return Ok(await recomandations);
         }
 
+        /// <summary>Creates the recomandation.</summary>
+        /// <param name="recomandation">The recomandation.</param>
+        /// <param name="skillId">The skill identifier.</param>
+        /// <returns>ActionResult.</returns>
         [HttpPost("SkillId")]
-        public async Task<IActionResult> CreateRecomandation([FromBody] Recomandation recomandation, int SkillId)
+        public async Task<IActionResult> CreateRecomandation([FromBody] Recomandation recomandation, int skillId)
         {
             try
             {
-                recomandation.SkillId = SkillId;
+                recomandation.SkillId = skillId;
                 _context.Recomandations.Add(recomandation);
                 await _context.SaveChangesAsync();
                 return Ok(recomandation);
@@ -43,6 +57,10 @@ namespace team2backend.Controllers
             }
         }
 
+        /// <summary>Edits the specified identifier.</summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="recomandationUpdated">The recomandation updated.</param>
+        /// <returns>ActionResult.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] Recomandation recomandationUpdated)
         {
@@ -62,6 +80,9 @@ namespace team2backend.Controllers
             }
         }
 
+        /// <summary>Deletes the recomandation.</summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>ActionResult.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecomandation(int id)
         {

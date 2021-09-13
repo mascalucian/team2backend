@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "team2backend", "team2backen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "team2backend.Tests", "team2backend.tests\team2backend.Tests\team2backend.Tests.csproj", "{1D7CB110-3A0E-4436-AFDB-56EB37F3150B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "team2backendMVC", "team2backendMVC\team2backendMVC.csproj", "{379CEADE-FDC9-4A08-B198-4DA436B60FA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "team2backendMVC", "team2backendMVC\team2backendMVC.csproj", "{379CEADE-FDC9-4A08-B198-4DA436B60FA8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AC696B86-E5F5-4052-9085-5FFA5500FBE3}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
