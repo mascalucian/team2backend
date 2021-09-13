@@ -15,7 +15,7 @@ namespace team2backend.Tests
     {
         private readonly ApplicationDbContext _context;
         [Fact]
-        public void SkillControllerAdd()
+        public async void SkillControllerAdd()
         {
 
         SkillsController controller;
@@ -24,14 +24,15 @@ namespace team2backend.Tests
 
         controller = new SkillsController(_context);
 
-            controller.CreateNewSkill(new Skill
+            await controller.CreateNewSkill(new Skill
             {
+                Id = 2,
                 Name = "test",
                 Recomandations = null,
             }
             );
 
-       // Assert.Equal(controller.)
+          //  Assert.Equal("test", controller.GetSkillById(2).Name);
         }
 
         
