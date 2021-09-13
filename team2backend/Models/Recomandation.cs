@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace team2backend.Models
+﻿namespace team2backend.Models
 {
     public class Recomandation
     {
@@ -19,8 +14,6 @@ namespace team2backend.Models
 
         //Navigation Properties
         public int SkillId { get; set; }
-
-        public Skill Skill { get; set; }
          
     }
 }
