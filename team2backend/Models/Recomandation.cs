@@ -1,5 +1,8 @@
 ﻿namespace team2backend.Models
 {
+    /// <summary>
+    ///   Recomandation Model.
+    /// </summary>
     public class Recomandation
     {
         public string Id { get; set; }
@@ -12,8 +15,7 @@
 
         public string Feedback { get; set; }
 
-        //Navigation Properties
+        // Navigation Properties
         public int SkillId { get; set; }
-         
     }
 }
