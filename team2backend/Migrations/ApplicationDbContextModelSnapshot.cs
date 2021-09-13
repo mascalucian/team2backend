@@ -314,13 +314,11 @@ namespace team2backend.Migrations
 
             modelBuilder.Entity("team2backend.Models.Recomandation", b =>
                 {
-                    b.HasOne("team2backend.Models.Skill", "Skill")
+                    b.HasOne("team2backend.Models.Skill", null)
                         .WithMany("Recomandations")
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Skill");
                 });
 
             modelBuilder.Entity("team2backend.Models.Skill", b =>

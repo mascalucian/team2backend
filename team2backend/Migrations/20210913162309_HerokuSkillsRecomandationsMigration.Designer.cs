@@ -10,8 +10,8 @@ using team2backend.Data;
 namespace team2backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210913081650_SkillAdded")]
-    partial class SkillAdded
+    [Migration("20210913162309_HerokuSkillsRecomandationsMigration")]
+    partial class HerokuSkillsRecomandationsMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -316,13 +316,11 @@ namespace team2backend.Migrations
 
             modelBuilder.Entity("team2backend.Models.Recomandation", b =>
                 {
-                    b.HasOne("team2backend.Models.Skill", "Skill")
+                    b.HasOne("team2backend.Models.Skill", null)
                         .WithMany("Recomandations")
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Skill");
                 });
 
             modelBuilder.Entity("team2backend.Models.Skill", b =>

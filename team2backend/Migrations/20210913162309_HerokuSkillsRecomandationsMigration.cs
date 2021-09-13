@@ -2,7 +2,7 @@
 
 namespace team2backend.Migrations
 {
-    public partial class LocalMigration : Migration
+    public partial class HerokuSkillsRecomandationsMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
