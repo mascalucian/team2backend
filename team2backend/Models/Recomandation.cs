@@ -21,6 +21,6 @@ namespace team2backend.Models
         public int SkillId { get; set; }
 
         public Skill Skill { get; set; }
-
+         
     }
 }
