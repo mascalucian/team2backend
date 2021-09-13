@@ -27,7 +27,7 @@
         /// <summary>Gets the recomandations.</summary>
         /// <param name="skillId">The skill identifier.</param>
         /// <returns>
-        ///   ActionResult.
+        ///   GetRecomandation ActionResult.
         /// </returns>
         [HttpGet("{SkillId}")]
         public async Task<IActionResult> GetRecomandations(int skillId)
@@ -40,7 +40,7 @@
         /// <summary>Creates the recomandation.</summary>
         /// <param name="recomandation">The recomandation.</param>
         /// <param name="skillId">The skill identifier.</param>
-        /// <returns>ActionResult.</returns>
+        /// <returns>CreateRecomandation ActionResult.</returns>
         [HttpPost("SkillId")]
         public async Task<IActionResult> CreateRecomandation([FromBody] Recomandation recomandation, int skillId)
         {
@@ -60,7 +60,7 @@
         /// <summary>Edits the specified identifier.</summary>
         /// <param name="id">The identifier.</param>
         /// <param name="recomandationUpdated">The recomandation updated.</param>
-        /// <returns>ActionResult.</returns>
+        /// <returns>The recomandation updated ActionResult.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] Recomandation recomandationUpdated)
         {
@@ -82,7 +82,7 @@
 
         /// <summary>Deletes the recomandation.</summary>
         /// <param name="id">The identifier.</param>
-        /// <returns>ActionResult.</returns>
+        /// <returns>Deletes the recomandation ActionResult.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecomandation(int id)
         {

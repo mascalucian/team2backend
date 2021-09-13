@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace team2backend.Data
 {
@@ -16,6 +16,5 @@ namespace team2backend.Data
         public DbSet<team2backend.Models.Skill> Skills { get; set; }
 
         public DbSet<team2backend.Models.Recomandation> Recomandations { get; set; }
-
     }
 }

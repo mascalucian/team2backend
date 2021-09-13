@@ -116,13 +116,14 @@ namespace team2backend.Controllers
         /// <returns>LastPage.</returns>
         private static int GetLastPageIndex(long numOfCourses)
         {
+            int lastPageIndex = (int)numOfCourses / NUMBER_OF_COURSES_PER_PAGE;
             if (numOfCourses % NUMBER_OF_COURSES_PER_PAGE == 0)
             {
-                return (int)numOfCourses / NUMBER_OF_COURSES_PER_PAGE;
+                return lastPageIndex;
             }
             else
             {
-                return (int)numOfCourses / NUMBER_OF_COURSES_PER_PAGE + 1;
+                return lastPageIndex + 1;
             }
         }
 
@@ -181,7 +182,7 @@ namespace team2backend.Controllers
         /// <returns>
         ///   <br />
         /// </returns>
-        private Response GetResponseError(bool wasOverFullFiled, bool noSearchFound)
+        Response GetResponseError(bool wasOverFullFiled, bool noSearchFound)
         {
             return new Response
             {

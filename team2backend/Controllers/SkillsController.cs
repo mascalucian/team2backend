@@ -11,7 +11,7 @@ namespace team2backend.Controllers
     public class SkillsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        
         public SkillsController(ApplicationDbContext context)
         {
             _context = context;
@@ -51,13 +51,11 @@ namespace team2backend.Controllers
             {
                 return BadRequest();
             }
-            
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] Skill updatedSkill)
         {
-
             var skillToUpdate = await _context.Skills.FindAsync(id);
 
             if (skillToUpdate != null)
@@ -75,12 +73,10 @@ namespace team2backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-
             var skill = await _context.Skills.FindAsync(id);
             _context.Skills.Remove(skill);
             await _context.SaveChangesAsync();
             return Ok();
         }
-
     }
 }
