@@ -1,9 +1,11 @@
-﻿namespace team2backend.Models
+﻿using team2backend.Data;
+
+namespace team2backend.Models
 {
     /// <summary>
     ///   Recomandation Model.
     /// </summary>
-    public class Recomandation
+    public class Recomandation : IEntity
     {
         public int Id { get; set; }
 
