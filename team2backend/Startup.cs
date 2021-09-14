@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using team2backend.Data;
+using team2backend.Services;
 
 namespace team2backend
 {
@@ -30,14 +31,14 @@ namespace team2backend
         public void ConfigureServices(IServiceCollection services)
         {
 
-			 services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(
-                    Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>(options =>
+               options.UseNpgsql(
+                   Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-			
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -50,6 +51,8 @@ namespace team2backend
                         .AllowAnyHeader()
                         .AllowAnyMethod());
             });
+            services.AddScoped<SkillRepository>();
+            services.AddScoped<RecommendationRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,7 +67,7 @@ namespace team2backend
             }
             else
             {
-            	app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -74,15 +77,15 @@ namespace team2backend
             app.UseRouting();
             app.UseCors("CorsApi");
 
- 			app.UseAuthentication();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
- 				endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                   name: "default",
+                   pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

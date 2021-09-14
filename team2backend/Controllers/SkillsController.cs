@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using team2backend.Data;
 using team2backend.Models;
+using team2backend.Services;
 
 namespace team2backend.Controllers
 {
@@ -10,17 +11,17 @@ namespace team2backend.Controllers
     [ApiController]
     public class SkillsController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        
-        public SkillsController(ApplicationDbContext context)
+        private readonly SkillRepository repository;
+
+        public SkillsController(SkillRepository repository)
         {
-            _context = context;
+            this.repository = repository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllSkills()
         {
-            return Ok(await _context.Skills.ToListAsync());
+            return Ok(repository.GetAll());
         }
 
         [HttpGet("{id}")]
@@ -28,8 +29,7 @@ namespace team2backend.Controllers
         {
             try
             {
-                var skill = await _context.Skills
-                    .FirstOrDefaultAsync(m => m.Id == id);
+                var skill = repository.Get(id);
                 return Ok();
             }
             catch
@@ -43,8 +43,7 @@ namespace team2backend.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(skill);
-                await _context.SaveChangesAsync();
+                repository.Add(skill);
                 return Ok();
             }
             else
@@ -56,12 +55,11 @@ namespace team2backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] Skill updatedSkill)
         {
-            var skillToUpdate = await _context.Skills.FindAsync(id);
+            var skillToUpdate = repository.Get(id);
 
             if (skillToUpdate != null)
             {
-                skillToUpdate.Name = updatedSkill.Name;
-                await _context.SaveChangesAsync();
+                repository.Update(id, updatedSkill);
                 return Ok();
             }
             else
@@ -73,9 +71,7 @@ namespace team2backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var skill = await _context.Skills.FindAsync(id);
-            _context.Skills.Remove(skill);
-            await _context.SaveChangesAsync();
+            repository.Delete(id);
             return Ok();
         }
     }

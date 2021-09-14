@@ -7,6 +7,7 @@
     using Microsoft.EntityFrameworkCore;
     using team2backend.Data;
     using team2backend.Models;
+    using team2backend.Services;
 
     /// <summary>
     ///   RecomandationController />.
@@ -15,13 +16,13 @@
     [ApiController]
     public class RecomandationsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly RecommendationRepository repository;
 
         /// <summary>Initializes a new instance of the <see cref="RecomandationsController" /> class.</summary>
         /// <param name="context">The context.</param>
-        public RecomandationsController(ApplicationDbContext context)
+        public RecomandationsController(RecommendationRepository repository)
         {
-            _context = context;
+            this.repository = repository;
         }
 
         /// <summary>Gets the recomandations.</summary>
@@ -32,9 +33,7 @@
         [HttpGet("{SkillId}")]
         public async Task<IActionResult> GetRecomandations(int skillId)
         {
-            var recomandations = _context.Recomandations.Where(sId => sId.SkillId == skillId)
-                .Distinct().ToListAsync();
-            return Ok(await recomandations);
+            return Ok(repository.GetRecomandationsForSkill(skillId));
         }
 
         /// <summary>Creates the recomandation.</summary>
@@ -47,8 +46,7 @@
             try
             {
                 recomandation.SkillId = skillId;
-                _context.Recomandations.Add(recomandation);
-                await _context.SaveChangesAsync();
+                repository.Add(recomandation);
                 return Ok(recomandation);
             }
             catch
@@ -64,14 +62,11 @@
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] Recomandation recomandationUpdated)
         {
-            var recomandationToUpdate = await _context.Recomandations.FindAsync(id);
+            var recomandationToUpdate = repository.Get(id);
 
             if (recomandationToUpdate != null)
             {
-                recomandationToUpdate.Rating = recomandationUpdated.Rating;
-                recomandationToUpdate.AuthorName = recomandationUpdated.AuthorName;
-                recomandationToUpdate.Feedback = recomandationUpdated.Feedback;
-                await _context.SaveChangesAsync();
+                repository.Update(id, recomandationUpdated);
                 return Ok();
             }
             else
@@ -86,9 +81,7 @@
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecomandation(int id)
         {
-            var recomandation = await _context.Recomandations.FindAsync(id);
-            _context.Recomandations.Remove(recomandation);
-            await _context.SaveChangesAsync();
+            repository.Delete(id);
             return Ok();
         }
     }

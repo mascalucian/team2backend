@@ -10,9 +10,17 @@ namespace team2backend.Services
 {
     public class RecommendationRepository : EfCoreRepository<Recomandation, ApplicationDbContext>
     {
+        private ApplicationDbContext context;
         public RecommendationRepository(ApplicationDbContext context) : base(context)
         {
 
+            this.context = context;
+        }
+
+        public List<Recomandation> GetRecomandationsForSkill(int id)
+        {
+            var recommendations = GetAll();
+            return recommendations.FindAll(_ => _.SkillId == id);
         }
     }
 }
