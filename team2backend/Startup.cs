@@ -48,7 +48,8 @@ namespace team2backend
                 options.AddPolicy("CorsApi",
                     builder => builder.WithOrigins("http://localhost:8080", "https://team2-frontend.herokuapp.com")
                         .AllowAnyHeader()
-                        .AllowAnyMethod());
+                        .AllowAnyMethod()
+                        .AllowCredentials());
             });
             services.AddSignalR();
         }
@@ -85,6 +86,7 @@ namespace team2backend
                    name: "default",
                    pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
+                endpoints.MapHub<MessageHub>("/message-hub");
             });
         }
     }
