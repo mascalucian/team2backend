@@ -44,18 +44,17 @@
         /// <param name="recomandation">The recomandation.</param>
         /// <param name="skillId">The skill identifier.</param>
         /// <returns>CreateRecomandation ActionResult.</returns>
-        [HttpPost("SkillId")]
-        public async Task<IActionResult> CreateRecomandation([FromBody] Recomandation recomandation, int skillId)
+        [HttpPost]
+        public async Task<IActionResult> CreateRecomandation([FromBody] Recomandation recomandation)
         {
             try
             {
-                recomandation.SkillId = skillId;
                 _context.Recomandations.Add(recomandation);
                 await _context.SaveChangesAsync();
 
                 // We don't use Put or Delete methods in our app so only this should broadcast.
                 hub.Clients.All.SendAsync("RecommendationAdded", recomandation);
-                return Ok(recomandation);
+                return Ok();
             }
             catch
             {
