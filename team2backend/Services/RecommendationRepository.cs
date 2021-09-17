@@ -11,9 +11,10 @@ namespace team2backend.Services
     public class RecommendationRepository : EfCoreRepository<Recomandation, ApplicationDbContext>
     {
         private ApplicationDbContext context;
-        public RecommendationRepository(ApplicationDbContext context) : base(context)
-        {
 
+        public RecommendationRepository(ApplicationDbContext context)
+            : base(context)
+        {
             this.context = context;
         }
 

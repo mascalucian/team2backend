@@ -8,9 +8,10 @@ namespace team2backend.Data.EfCore
 {
     public abstract class EfCoreRepository<TEntity, TContext> : IRepository<TEntity>
          where TEntity : class, IEntity
-        where TContext : DbContext
+         where TContext : DbContext
     {
         private readonly TContext context;
+
         public EfCoreRepository(TContext context)
         {
             this.context = context;

@@ -10,9 +10,9 @@ namespace team2backend.Services
 {
     public class SkillRepository : EfCoreRepository<Skill, ApplicationDbContext>
     {
-        public SkillRepository(ApplicationDbContext context) : base(context)
+        public SkillRepository(ApplicationDbContext context)
+            : base(context)
         {
-
         }
     }
 }
