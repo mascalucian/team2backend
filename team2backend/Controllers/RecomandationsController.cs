@@ -74,7 +74,6 @@
             if (recomandationToUpdate != null)
             {
                 recomandationToUpdate.Rating = recomandationUpdated.Rating;
-                recomandationToUpdate.AuthorName = recomandationUpdated.AuthorName;
                 recomandationToUpdate.Feedback = recomandationUpdated.Feedback;
                 await _context.SaveChangesAsync();
                 return Ok();

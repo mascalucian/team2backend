@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.SignalR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,29 +11,31 @@ using Xunit;
 
 namespace team2backend.Tests
 {
-    
+
     public class SkillControllerTest
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<MessageHub> hub;
         [Fact]
         public /*async*/ void SkillControllerAdd()
         {
 
-        SkillsController controller;
+            SkillsController controller;
 
             // Asume
 
-        controller = new SkillsController(_context);
+            controller = new SkillsController(_context, hub);
 
-            /*await*/ controller.CreateNewSkill(new Skill
+            /*await*/
+            controller.CreateNewSkill(new Skill
             {
                 Name = "test",
                 Recomandations = null,
             }
-            );
+  );
         }
 
-        
+
 
     }
 }

@@ -219,11 +219,10 @@ namespace team2backend.Migrations
 
             modelBuilder.Entity("team2backend.Models.Recomandation", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("AuthorName")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
@@ -235,6 +234,9 @@ namespace team2backend.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("SkillId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");

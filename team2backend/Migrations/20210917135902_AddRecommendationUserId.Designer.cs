@@ -10,8 +10,8 @@ using team2backend.Data;
 namespace team2backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210913171957_MergedBranch")]
-    partial class MergedBranch
+    [Migration("20210917135902_AddRecommendationUserId")]
+    partial class AddRecommendationUserId
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -221,11 +221,10 @@ namespace team2backend.Migrations
 
             modelBuilder.Entity("team2backend.Models.Recomandation", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("AuthorName")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
@@ -237,6 +236,9 @@ namespace team2backend.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("SkillId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
