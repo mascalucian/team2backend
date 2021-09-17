@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
     using Microsoft.EntityFrameworkCore;
     using team2backend.Data;
     using team2backend.Models;
@@ -16,12 +17,14 @@
     public class RecomandationsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<MessageHub> hub;
 
         /// <summary>Initializes a new instance of the <see cref="RecomandationsController" /> class.</summary>
         /// <param name="context">The context.</param>
-        public RecomandationsController(ApplicationDbContext context)
+        public RecomandationsController(ApplicationDbContext context, IHubContext<MessageHub> hub)
         {
             _context = context;
+            this.hub = hub;
         }
 
         /// <summary>Gets the recomandations.</summary>
@@ -49,6 +52,9 @@
                 recomandation.SkillId = skillId;
                 _context.Recomandations.Add(recomandation);
                 await _context.SaveChangesAsync();
+
+                // We don't use Put or Delete methods in our app so only this should broadcast.
+                hub.Clients.All.SendAsync("RecommendationAdded", recomandation);
                 return Ok(recomandation);
             }
             catch

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using team2backend.Data;
 using team2backend.Models;
@@ -11,10 +12,12 @@ namespace team2backend.Controllers
     public class SkillsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        
-        public SkillsController(ApplicationDbContext context)
+        private readonly IHubContext<MessageHub> hub;
+
+        public SkillsController(ApplicationDbContext context, IHubContext<MessageHub> hub)
         {
             _context = context;
+            this.hub = hub;
         }
 
         [HttpGet]
@@ -45,6 +48,7 @@ namespace team2backend.Controllers
             {
                 _context.Add(skill);
                 await _context.SaveChangesAsync();
+                hub.Clients.All.SendAsync("SkillCreated", skill);
                 return Ok();
             }
             else
@@ -62,6 +66,7 @@ namespace team2backend.Controllers
             {
                 skillToUpdate.Name = updatedSkill.Name;
                 await _context.SaveChangesAsync();
+                hub.Clients.All.SendAsync("SkillUpdated", skillToUpdate);
                 return Ok();
             }
             else
@@ -76,6 +81,7 @@ namespace team2backend.Controllers
             var skill = await _context.Skills.FindAsync(id);
             _context.Skills.Remove(skill);
             await _context.SaveChangesAsync();
+            hub.Clients.All.SendAsync("SkillDeleted", id);
             return Ok();
         }
     }
