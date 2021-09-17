@@ -81,7 +81,7 @@ namespace team2backend.Controllers
             var skill = await _context.Skills.FindAsync(id);
             _context.Skills.Remove(skill);
             await _context.SaveChangesAsync();
-            hub.Clients.All.SendAsync("SkillDeleted", id);
+            hub.Clients.All.SendAsync("SkillDeleted", skill);
             return Ok();
         }
     }
