@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using team2backend.Data;
@@ -9,9 +10,10 @@ using team2backend.Data;
 namespace team2backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210918172749_AddUser")]
+    partial class AddUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,12 +234,17 @@ namespace team2backend.Migrations
                     b.Property<int>("SkillId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.Property<string>("UserName")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SkillId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Recomandations");
                 });
@@ -255,6 +262,22 @@ namespace team2backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Skills");
+                });
+
+            modelBuilder.Entity("team2backend.Models.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -315,11 +338,20 @@ namespace team2backend.Migrations
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("team2backend.Models.User", null)
+                        .WithMany("Recommendations")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("team2backend.Models.Skill", b =>
                 {
                     b.Navigation("Recomandations");
+                });
+
+            modelBuilder.Entity("team2backend.Models.User", b =>
+                {
+                    b.Navigation("Recommendations");
                 });
 #pragma warning restore 612, 618
         }
