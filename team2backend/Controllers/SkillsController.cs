@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using team2backend.Models;
 
 namespace team2backend.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class SkillsController : Controller

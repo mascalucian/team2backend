@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace team2backend
 {
-    public class Response
+    public class AuthResponse
     {
         public bool WasOverFullFiled { get; set; }
 

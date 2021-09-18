@@ -26,7 +26,7 @@ namespace team2backend.Controllers
         [EnableCors("CorsApi")]
         [HttpGet]
         [Route("{searchFor}/{numPage}")]
-        public Response Get(string searchFor, int numPage)
+        public AuthResponse Get(string searchFor, int numPage)
         {
             string content = GetSearchResults(searchFor, numPage);
             var json = JObject.Parse(content);
@@ -158,7 +158,7 @@ namespace team2backend.Controllers
         /// <returns>
         ///   <br />
         /// </returns>
-        private Response GetResponseOrResponseError(JObject json, long numberOfCoursesPerSearch, int numOfCoursesOnThisPage)
+        private AuthResponse GetResponseOrResponseError(JObject json, long numberOfCoursesPerSearch, int numOfCoursesOnThisPage)
         {
             var PageNotFound = json.Value<string>("detail");
 
@@ -182,9 +182,9 @@ namespace team2backend.Controllers
         /// <returns>
         ///   <br />
         /// </returns>
-        Response GetResponseError(bool wasOverFullFiled, bool noSearchFound)
+        AuthResponse GetResponseError(bool wasOverFullFiled, bool noSearchFound)
         {
-            return new Response
+            return new AuthResponse
             {
                 WasOverFullFiled = wasOverFullFiled,
                 NoSearchFound = noSearchFound,
@@ -200,9 +200,9 @@ namespace team2backend.Controllers
         /// <returns>
         ///   <br />
         /// </returns>
-        private Response GetResponse(JObject json, int numOfCoursesPerThisPage, long numOfCourses)
+        private AuthResponse GetResponse(JObject json, int numOfCoursesPerThisPage, long numOfCourses)
         {
-            return new Response
+            return new AuthResponse
             {
                 WasOverFullFiled = false,
                 NoSearchFound = false,
