@@ -10,8 +10,8 @@ using team2backend.Data;
 namespace team2backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210917135902_AddRecommendationUserId")]
-    partial class AddRecommendationUserId
+    [Migration("20210917180930_MigratedToLocalDb")]
+    partial class MigratedToLocalDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -238,8 +238,8 @@ namespace team2backend.Migrations
                     b.Property<int>("SkillId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
