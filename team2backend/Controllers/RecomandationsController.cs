@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SignalR;
     using Microsoft.EntityFrameworkCore;
@@ -42,8 +43,8 @@
 
         /// <summary>Creates the recomandation.</summary>
         /// <param name="recomandation">The recomandation.</param>
-        /// <param name="skillId">The skill identifier.</param>
         /// <returns>CreateRecomandation ActionResult.</returns>
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateRecomandation([FromBody] Recomandation recomandation)
         {
@@ -67,6 +68,7 @@
         /// <param name="id">The identifier.</param>
         /// <param name="recomandationUpdated">The recomandation updated.</param>
         /// <returns>The recomandation updated ActionResult.</returns>
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] Recomandation recomandationUpdated)
         {
@@ -88,6 +90,7 @@
         /// <summary>Deletes the recomandation.</summary>
         /// <param name="id">The identifier.</param>
         /// <returns>Deletes the recomandation ActionResult.</returns>
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecomandation(int id)
         {
