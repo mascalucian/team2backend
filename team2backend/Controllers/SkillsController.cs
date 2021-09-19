@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using team2backend.Authentication;
 using team2backend.Data;
 using team2backend.Dtos;
@@ -58,6 +59,13 @@ namespace team2backend.Controllers
             if (ModelState.IsValid)
             {
                 var skill = mapper.Map<Skill>(skillDto);
+                var checkSkill = await _context.Skills
+                   .FirstOrDefaultAsync(m => m.Name == skill.Name);
+                if (checkSkill != null) return BadRequest();
+                var content = UdemyCourseController.GetSearchResults(skill.Name, 1);
+                var json = JObject.Parse(content);
+                var numberOfCoursesPerSearch = json.Value<long>("count");
+                if (numberOfCoursesPerSearch == 0) return BadRequest();
                 _context.Add(skill);
                 await _context.SaveChangesAsync();
                 hub.Clients.All.SendAsync("SkillCreated", skillDto);
@@ -95,6 +103,7 @@ namespace team2backend.Controllers
         {
             var skill = await _context.Skills.FindAsync(id);
             _context.Skills.Remove(skill);
+            _context.Recomandations.RemoveRange(_context.Recomandations.Where(_ => _.SkillId == id));
             await _context.SaveChangesAsync();
             var skillDto = mapper.Map<CreateNewSkillDto>(skill);
             hub.Clients.All.SendAsync("SkillDeleted", skillDto);

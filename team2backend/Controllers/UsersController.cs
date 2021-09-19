@@ -40,7 +40,6 @@ namespace team2backend.Controllers
                 userDto.Roles = roles;
                 return Ok(userDto);
             }
-
             return NotFound();
         }
     }

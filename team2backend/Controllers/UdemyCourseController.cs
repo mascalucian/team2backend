@@ -100,7 +100,8 @@ namespace team2backend.Controllers
         /// <returns>
         ///   < SearchResult />
         /// </returns>
-        private static string GetSearchResults(string searchFor, int numPage)
+        [NonAction]
+        public static string GetSearchResults(string searchFor, int numPage)
         {
             var client = new RestClient($"https://www.udemy.com/api-2.0/courses/?page={numPage}&search={HttpUtility.UrlEncode(searchFor)}");
             client.Timeout = -1;
