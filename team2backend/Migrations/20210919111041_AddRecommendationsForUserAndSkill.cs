@@ -4,10 +4,23 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace team2backend.Migrations
 {
-    public partial class InitialMigrations : Migration
+    public partial class AddRecommendationsForUserAndSkill : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AppUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Username = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUsers", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -167,7 +180,7 @@ namespace team2backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Recomandations",
+                name: "Recommendations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -176,13 +189,20 @@ namespace team2backend.Migrations
                     Rating = table.Column<int>(type: "integer", nullable: false),
                     UserName = table.Column<string>(type: "text", nullable: true),
                     Feedback = table.Column<string>(type: "text", nullable: true),
-                    SkillId = table.Column<int>(type: "integer", nullable: false)
+                    SkillId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Recomandations", x => x.Id);
+                    table.PrimaryKey("PK_Recommendations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Recomandations_Skills_SkillId",
+                        name: "FK_Recommendations_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Recommendations_Skills_SkillId",
                         column: x => x.SkillId,
                         principalTable: "Skills",
                         principalColumn: "Id",
@@ -227,9 +247,14 @@ namespace team2backend.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Recomandations_SkillId",
-                table: "Recomandations",
+                name: "IX_Recommendations_SkillId",
+                table: "Recommendations",
                 column: "SkillId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Recommendations_UserId",
+                table: "Recommendations",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -250,13 +275,16 @@ namespace team2backend.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Recomandations");
+                name: "Recommendations");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "AppUsers");
 
             migrationBuilder.DropTable(
                 name: "Skills");

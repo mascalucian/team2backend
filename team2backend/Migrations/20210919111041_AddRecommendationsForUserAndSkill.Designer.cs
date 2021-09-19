@@ -10,8 +10,8 @@ using team2backend.Data;
 namespace team2backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210918182551_AddAuthMigrations")]
-    partial class AddAuthMigrations
+    [Migration("20210919111041_AddRecommendationsForUserAndSkill")]
+    partial class AddRecommendationsForUserAndSkill
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -234,6 +234,9 @@ namespace team2backend.Migrations
                     b.Property<int>("SkillId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.Property<string>("UserName")
                         .HasColumnType("text");
 
@@ -241,7 +244,9 @@ namespace team2backend.Migrations
 
                     b.HasIndex("SkillId");
 
-                    b.ToTable("Recomandations");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Recommendations");
                 });
 
             modelBuilder.Entity("team2backend.Models.Skill", b =>
@@ -257,6 +262,22 @@ namespace team2backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Skills");
+                });
+
+            modelBuilder.Entity("team2backend.Models.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppUsers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -317,11 +338,20 @@ namespace team2backend.Migrations
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("team2backend.Models.User", null)
+                        .WithMany("Recommendations")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("team2backend.Models.Skill", b =>
                 {
                     b.Navigation("Recomandations");
+                });
+
+            modelBuilder.Entity("team2backend.Models.User", b =>
+                {
+                    b.Navigation("Recommendations");
                 });
 #pragma warning restore 612, 618
         }

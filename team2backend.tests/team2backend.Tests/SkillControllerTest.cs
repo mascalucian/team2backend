@@ -30,7 +30,7 @@ namespace team2backend.Tests
             controller.CreateNewSkill(new Skill
             {
                 Name = "test",
-                Recomandations = null,
+                //Recomandations = null,
             }
   );
         }

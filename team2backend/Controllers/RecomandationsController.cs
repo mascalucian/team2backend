@@ -33,27 +33,35 @@
         /// <returns>
         ///   GetRecomandation ActionResult.
         /// </returns>
-        [HttpGet("{SkillId}")]
+        [HttpGet("{skillId}")]
         public async Task<IActionResult> GetRecomandations(int skillId)
         {
-            var recomandations = _context.Recomandations.Where(sId => sId.SkillId == skillId)
+            try
+            {
+                var recomandations = await _context.Recommendations.Where(recommendationId => recommendationId.SkillId == skillId)
                 .Distinct().ToListAsync();
-            return Ok(await recomandations);
+                return Ok(recomandations);
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>Creates the recomandation.</summary>
         /// <param name="recomandation">The recomandation.</param>
         /// <returns>CreateRecomandation ActionResult.</returns>
-        [Authorize]
+        //[Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateRecomandation([FromBody] Recomandation recomandation)
         {
             try
             {
-                _context.Recomandations.Add(recomandation);
+                _context.Recommendations.Add(recomandation);
                 await _context.SaveChangesAsync();
                 var skill = _context.Skills.Find(recomandation.SkillId);
                 var response = new { recomandation, skill };
+
                 // We don't use Put or Delete methods in our app so only this should broadcast.
                 hub.Clients.All.SendAsync("RecommendationAdded", response);
                 return Ok();
@@ -68,11 +76,11 @@
         /// <param name="id">The identifier.</param>
         /// <param name="recomandationUpdated">The recomandation updated.</param>
         /// <returns>The recomandation updated ActionResult.</returns>
-        [Authorize]
+        //[Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] Recomandation recomandationUpdated)
         {
-            var recomandationToUpdate = await _context.Recomandations.FindAsync(id);
+            var recomandationToUpdate = await _context.Recommendations.FindAsync(id);
 
             if (recomandationToUpdate != null)
             {
@@ -90,12 +98,12 @@
         /// <summary>Deletes the recomandation.</summary>
         /// <param name="id">The identifier.</param>
         /// <returns>Deletes the recomandation ActionResult.</returns>
-        [Authorize]
+        //[Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecomandation(int id)
         {
-            var recomandation = await _context.Recomandations.FindAsync(id);
-            _context.Recomandations.Remove(recomandation);
+            var recomandation = await _context.Recommendations.FindAsync(id);
+            _context.Recommendations.Remove(recomandation);
             await _context.SaveChangesAsync();
             return Ok();
         }

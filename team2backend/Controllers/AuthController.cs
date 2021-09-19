@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using team2backend.Authentication;
 using team2backend.Authentication.Models;
+using team2backend.Data;
+using team2backend.Models;
 
 namespace team2backend.Controllers
 {
@@ -21,12 +23,14 @@ namespace team2backend.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
+        private readonly ApplicationDbContext context;
 
-        public AuthController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AuthController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, ApplicationDbContext context)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
             _configuration = configuration;
+            this.context = context;
         }
 
         [HttpPost]
@@ -82,6 +86,14 @@ namespace team2backend.Controllers
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = model.Username,
             };
+
+            User appUser = new User()
+            {
+                Email = model.Email,
+                Username = model.Username,
+                Id = user.Id,
+            };
+            await context.AppUsers.AddAsync(appUser);
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseAuth { Status = "Error", Message = "User creation failed! Please check user details and try again ." });
@@ -103,6 +115,14 @@ namespace team2backend.Controllers
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = model.Username,
             };
+
+            User appUser = new User()
+            {
+                Email = model.Email,
+                Username = model.Username,
+                Id = user.Id,
+            };
+            await context.AppUsers.AddAsync(appUser);
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new ResponseAuth { Status = "Error", Message = "User creation failed! Please check user details and try again ." });

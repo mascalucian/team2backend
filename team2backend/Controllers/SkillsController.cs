@@ -34,8 +34,8 @@ namespace team2backend.Controllers
             try
             {
                 var skill = await _context.Skills
-                    .FirstOrDefaultAsync(m => m.Id == id);
-                return Ok();
+                    .FirstOrDefaultAsync(skill => skill.Id == id);
+                return Ok(skill);
             }
             catch
             {
@@ -43,7 +43,7 @@ namespace team2backend.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
+        //[Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         public async Task<IActionResult> CreateNewSkill([FromBody] Skill skill)
         {
@@ -60,7 +60,7 @@ namespace team2backend.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
+        //[Authorize(Roles = UserRoles.Admin)]
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] Skill updatedSkill)
         {
@@ -79,7 +79,7 @@ namespace team2backend.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
+        //[Authorize(Roles = UserRoles.Admin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
