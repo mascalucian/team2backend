@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using team2backend.Authentication;
 using team2backend.Data;
 using team2backend.Models;
@@ -15,7 +16,6 @@ namespace team2backend.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IHubContext<MessageHub> hub;
-
         public SkillsController(ApplicationDbContext context, IHubContext<MessageHub> hub)
         {
             _context = context;
@@ -49,6 +49,13 @@ namespace team2backend.Controllers
         {
             if (ModelState.IsValid)
             {
+                var checkSkill = await _context.Skills
+                   .FirstOrDefaultAsync(m => m.Name == skill.Name);
+                if (checkSkill != null) return BadRequest();
+                var content = UdemyCourseController.GetSearchResults(skill.Name, 1);
+                var json = JObject.Parse(content);
+                var numberOfCoursesPerSearch = json.Value<long>("count");
+                if (numberOfCoursesPerSearch == 0) return BadRequest();
                 _context.Add(skill);
                 await _context.SaveChangesAsync();
                 hub.Clients.All.SendAsync("SkillCreated", skill);
