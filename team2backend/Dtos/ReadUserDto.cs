@@ -11,6 +11,6 @@ namespace team2backend.Dtos
         public string UserName { get; set; }
         public string Email { get; set; }
 
-        public IEnumerable<string> Roles { get; set; }
+        public IList<string> Roles { get; set; }
     }
 }

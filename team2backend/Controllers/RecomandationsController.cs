@@ -41,6 +41,14 @@
             return Ok(await recomandations);
         }
 
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetRecomandationsForUser(string userId)
+        {
+            var recomandations = _context.Recomandations.Where(sId => sId.UserId == userId)
+                .Distinct().ToListAsync();
+            return Ok(await recomandations);
+        }
+
         /// <summary>Creates the recomandation.</summary>
         /// <param name="recomandation">The recomandation.</param>
         /// <returns>CreateRecomandation ActionResult.</returns>
