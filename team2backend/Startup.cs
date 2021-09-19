@@ -30,9 +30,7 @@ namespace team2backend
         {
             // For Entity Framework
             services.AddDbContext<ApplicationDbContext>(options =>
-               options.UseNpgsql(
-                   Configuration.GetConnectionString(GetConnectionString())));
-                 //  Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(GetConnectionString()));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             // For Identity
@@ -119,8 +117,8 @@ namespace team2backend
 
             Uri uri = new Uri(connectionString);
 
-            
-         
+
+
             string converted = $"Database={uri.AbsolutePath.TrimStart('/')};Host={uri.Host};Port={uri.Port};User Id={uri.UserInfo.Split(":")[0]};Password={uri.UserInfo.Split(":")[1]};SSL Mode=Require;Trust Server Certificate=true";
             return converted;
         }
