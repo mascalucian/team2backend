@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using team2backend.Authentication;
 using team2backend.Authentication.Models;
+using team2backend.Dtos;
 
 namespace team2backend.Controllers
 {
@@ -57,11 +58,18 @@ namespace team2backend.Controllers
                     expires: DateTime.Now.AddHours(3),
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256));
-
+                var readUserDto = new ReadUserDto
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Roles = await userManager.GetRolesAsync(user).ConfigureAwait(false)
+                };
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
                     expiration = token.ValidTo,
+                    user = readUserDto,
                 });
             }
 
