@@ -42,7 +42,5 @@ namespace team2backend.Controllers
             }
             return NotFound();
         }
-
-
     }
 }
