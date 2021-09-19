@@ -8,11 +8,13 @@ namespace team2backend.Profiles
     {
         public RecommendationProfile()
         {
-            CreateMap<GetRecommendationsByUserId, Recomandation>();
+            CreateMap<Recomandation, GetRecommendationsByUserId>();
 
-            CreateMap<GetRecommendationsBySkillId, Recomandation>();
+            CreateMap<Recomandation, GetRecommendationsBySkillId>();
 
-            CreateMap<Recomandation, CreateRecommendationDto>();
+            CreateMap<CreateRecommendationDto, Recomandation>();
+
+            CreateMap<EditRecommendationDto, Recomandation>();
         }
     }
 }

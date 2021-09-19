@@ -1,10 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using team2backend.Authentication;
 using team2backend.Data;
+using team2backend.Dtos;
 using team2backend.Models;
 
 namespace team2backend.Controllers
@@ -15,17 +18,21 @@ namespace team2backend.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IHubContext<MessageHub> hub;
+        private readonly IMapper mapper;
 
-        public SkillsController(ApplicationDbContext context, IHubContext<MessageHub> hub)
+        public SkillsController(ApplicationDbContext context, IHubContext<MessageHub> hub, IMapper mapper)
         {
             _context = context;
             this.hub = hub;
+            this.mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllSkills()
         {
-            return Ok(await _context.Skills.ToListAsync());
+            var skills = await _context.Skills.ToListAsync();
+            var getAllSkillsDto = mapper.Map<IEnumerable<GetAllSkillsDto>>(skills);
+            return Ok(getAllSkillsDto);
         }
 
         [HttpGet("{id}")]
@@ -35,7 +42,8 @@ namespace team2backend.Controllers
             {
                 var skill = await _context.Skills
                     .FirstOrDefaultAsync(m => m.Id == id);
-                return Ok(skill);
+                var getSkillById = mapper.Map<GetSkillByIdDto>(skill);
+                return Ok(getSkillById);
             }
             catch
             {
@@ -45,13 +53,14 @@ namespace team2backend.Controllers
 
         [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
-        public async Task<IActionResult> CreateNewSkill([FromBody] Skill skill)
+        public async Task<IActionResult> CreateNewSkill([FromBody] CreateNewSkillDto skillDto)
         {
             if (ModelState.IsValid)
             {
+                var skill = mapper.Map<Skill>(skillDto);
                 _context.Add(skill);
                 await _context.SaveChangesAsync();
-                hub.Clients.All.SendAsync("SkillCreated", skill);
+                hub.Clients.All.SendAsync("SkillCreated", skillDto);
                 return Ok();
             }
             else
@@ -62,15 +71,16 @@ namespace team2backend.Controllers
 
         [Authorize(Roles = UserRoles.Admin)]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, [FromBody] Skill updatedSkill)
+        public async Task<IActionResult> Edit(int id, [FromBody] CreateNewSkillDto updatedSkillDto)
         {
             var skillToUpdate = await _context.Skills.FindAsync(id);
 
             if (skillToUpdate != null)
             {
-                skillToUpdate.Name = updatedSkill.Name;
+                skillToUpdate.Name = updatedSkillDto.Name;
                 await _context.SaveChangesAsync();
-                hub.Clients.All.SendAsync("SkillUpdated", skillToUpdate);
+                var skillDto = mapper.Map<CreateNewSkillDto>(skillToUpdate);
+                hub.Clients.All.SendAsync("SkillUpdated", skillDto);
                 return Ok();
             }
             else
@@ -86,7 +96,8 @@ namespace team2backend.Controllers
             var skill = await _context.Skills.FindAsync(id);
             _context.Skills.Remove(skill);
             await _context.SaveChangesAsync();
-            hub.Clients.All.SendAsync("SkillDeleted", skill);
+            var skillDto = mapper.Map<CreateNewSkillDto>(skill);
+            hub.Clients.All.SendAsync("SkillDeleted", skillDto);
             return Ok();
         }
     }

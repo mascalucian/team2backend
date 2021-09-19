@@ -92,14 +92,15 @@
         /// <returns>The recomandation updated ActionResult.</returns>
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, [FromBody] Recomandation recomandationUpdated)
+        public async Task<IActionResult> Edit(int id, [FromBody] EditRecommendationDto recomandationUpdatedDto)
         {
             var recomandationToUpdate = await _context.Recomandations.FindAsync(id);
 
             if (recomandationToUpdate != null)
             {
-                recomandationToUpdate.Rating = recomandationUpdated.Rating;
-                recomandationToUpdate.Feedback = recomandationUpdated.Feedback;
+                var recommendation = mapper.Map<Recomandation>(recomandationUpdatedDto);
+                recomandationToUpdate.Rating = recommendation.Rating;
+                recomandationToUpdate.Feedback = recommendation.Feedback;
                 await _context.SaveChangesAsync();
                 return Ok();
             }
