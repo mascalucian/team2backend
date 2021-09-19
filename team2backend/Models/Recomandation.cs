@@ -17,5 +17,7 @@
 
         // Navigation Properties
         public int SkillId { get; set; }
+
+        public string UserId { get; set; }
     }
 }
