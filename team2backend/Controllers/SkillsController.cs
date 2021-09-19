@@ -35,7 +35,7 @@ namespace team2backend.Controllers
             {
                 var skill = await _context.Skills
                     .FirstOrDefaultAsync(m => m.Id == id);
-                return Ok();
+                return Ok(skill);
             }
             catch
             {

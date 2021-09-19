@@ -65,9 +65,7 @@ namespace team2backend.Controllers
                     Price = jsonPrice,
                     CourseImage = jsonCourseImage,
                     Headline = jsonHeadline,
-                    Instructors = null,
-
-                    // Instructors = ConvertResponseToInstructors(instructors, instructorsLength),
+                    Instructors = ConvertResponseToInstructors(instructors),
                 };
             }).ToArray();
         }
@@ -78,22 +76,23 @@ namespace team2backend.Controllers
         /// <returns>
         ///   <br />
         /// </returns>
-        //public IEnumerable<Instructor> ConvertResponseToInstructors(JToken instructors, int instructorsLength)
-        //{
-        //    return Enumerable.Range(1, instructorsLength).Select(index =>
-        //    {
-        //        var currentInstructor = instructors[index - 1];
-        //        var jsonInstructorTitle = currentInstructor.Value<string>("job_title");
-        //        var jsonInstructorName = currentInstructor.Value<string>("display_name");
-        //        var jsonInstructorPhoto = currentInstructor.Value<string>("image_100x100");
-        //        return new Instructor
-        //        {
-        //            Name = jsonInstructorName,
-        //            Title = jsonInstructorTitle,
-        //            Photo = jsonInstructorPhoto,
-        //        };
-        //    }).ToArray();
-        //}
+        [NonAction]
+        public IEnumerable<Instructor> ConvertResponseToInstructors(JToken instructors)
+        {
+            return Enumerable.Range(1, instructors.Count()).Select(index =>
+            {
+                var currentInstructor = instructors[index - 1];
+                var jsonInstructorTitle = currentInstructor.Value<string>("job_title");
+                var jsonInstructorName = currentInstructor.Value<string>("display_name");
+                var jsonInstructorPhoto = currentInstructor.Value<string>("image_100x100");
+                return new Instructor
+                {
+                    Name = jsonInstructorName,
+                    Title = jsonInstructorTitle,
+                    Photo = jsonInstructorPhoto,
+                };
+            }).ToArray();
+        }
 
         /// <summary>Gets the search results.</summary>
         /// <param name="searchFor">The search for.</param>
