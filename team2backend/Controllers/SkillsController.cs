@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -92,6 +93,7 @@ namespace team2backend.Controllers
         {
             var skill = await _context.Skills.FindAsync(id);
             _context.Skills.Remove(skill);
+            _context.Recomandations.RemoveRange(_context.Recomandations.Where(_ => _.SkillId == id));
             await _context.SaveChangesAsync();
             hub.Clients.All.SendAsync("SkillDeleted", skill);
             return Ok();
