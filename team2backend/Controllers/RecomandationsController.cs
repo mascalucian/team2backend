@@ -58,9 +58,11 @@
         {
             try
             {
+                var skill = await _context.Skills
+                    .FirstOrDefaultAsync(_ => _.Id == recomandation.SkillId);
+                recomandation.SkillName = skill.Name;
                 _context.Recomandations.Add(recomandation);
                 await _context.SaveChangesAsync();
-                var skill = _context.Skills.Find(recomandation.SkillId);
                 var response = new { recomandation, skill };
                 // We don't use Put or Delete methods in our app so only this should broadcast.
                 hub.Clients.All.SendAsync("RecommendationAdded", response);
