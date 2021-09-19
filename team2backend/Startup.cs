@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using team2backend.Authentication;
 using team2backend.Data;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 
 namespace team2backend
 {
@@ -30,7 +31,7 @@ namespace team2backend
             // For Entity Framework
             services.AddDbContext<ApplicationDbContext>(options =>
                options.UseNpgsql(
-                   Configuration.GetConnectionString("DefaultConnection")));
+                   Configuration.GetConnectionString(GetConnectionString())));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             // For Identity
@@ -101,6 +102,27 @@ namespace team2backend
                 AppDomain.CurrentDomain.GetAssemblies());
         }
 
+        private string GetConnectionString()
+        {
+            var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+            if (connectionString != null)
+            {
+                return ConvertConnectionString(connectionString);
+            }
+            return Configuration.GetConnectionString("DefaultConnection");
+        }
+
+        public static string ConvertConnectionString(string connectionString)
+        {
+
+
+            Uri uri = new Uri(connectionString);
+
+            
+         
+            string converted = $"Database={uri.AbsolutePath.TrimStart('/')};Host={uri.Host};Port={uri.Port};User Id={uri.UserInfo.Split(":")[0]};Password={uri.UserInfo.Split(":")[1]};SSL Mode=Require;Trust Server Certificate=true";
+            return converted;
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
