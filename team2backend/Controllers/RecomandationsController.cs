@@ -33,7 +33,7 @@
         /// <returns>
         ///   GetRecomandation ActionResult.
         /// </returns>
-        [HttpGet("{skillId}")]
+        [HttpGet("{SkillId}")]
         public async Task<IActionResult> GetRecomandations(int skillId)
         {
             var recomandations = _context.Recomandations.Where(sId => sId.SkillId == skillId)
@@ -62,7 +62,6 @@
                 await _context.SaveChangesAsync();
                 var skill = _context.Skills.Find(recomandation.SkillId);
                 var response = new { recomandation, skill };
-
                 // We don't use Put or Delete methods in our app so only this should broadcast.
                 hub.Clients.All.SendAsync("RecommendationAdded", response);
                 return Ok();
