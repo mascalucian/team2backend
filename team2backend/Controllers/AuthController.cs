@@ -82,8 +82,10 @@ namespace team2backend.Controllers
         {
             var userExists = await userManager.FindByNameAsync(model.Username);
             if (userExists != null)
-                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseAuth { Status = "Error", Message = "User already exists!" });
-
+                return StatusCode(StatusCodes.Status400BadRequest, new ResponseAuth { Status = "Error", Message = "User already exists!" });
+            userExists = await userManager.FindByEmailAsync(model.Email);
+            if (userExists != null)
+                return StatusCode(StatusCodes.Status400BadRequest, new ResponseAuth { Status = "Error", Message = "Email is already in use!" });
             ApplicationUser user = new ApplicationUser()
             {
                 Email = model.Email,
@@ -92,7 +94,7 @@ namespace team2backend.Controllers
             };
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
-                return StatusCode(StatusCodes.Status500InternalServerError, new ResponseAuth { Status = "Error", Message = "User creation failed! Please check user details and try again ." });
+                return StatusCode(StatusCodes.Status400BadRequest, new ResponseAuth { Status = "Error", Message = "User creation failed! Please check user details and try again ." });
 
             return Ok(new ResponseAuth { Status = "Success", Message = "User created successfully!" });
         }
