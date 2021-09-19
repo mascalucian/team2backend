@@ -24,15 +24,15 @@ namespace team2backend.Tests
 
             // Asume
 
-            controller = new SkillsController(_context, hub);
+            //controller = new SkillsController(_context, hub);
 
             /*await*/
-            controller.CreateNewSkill(new Skill
+            //controller.CreateNewSkill(new Skill
             {
-                Name = "test",
-                Recomandations = null,
+                //Name = "test",
+                //Recomandations = null,
             }
-  );
+  //);
         }
 
 
