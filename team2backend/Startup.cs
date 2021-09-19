@@ -32,6 +32,7 @@ namespace team2backend
             services.AddDbContext<ApplicationDbContext>(options =>
                options.UseNpgsql(
                    Configuration.GetConnectionString(GetConnectionString())));
+                 //  Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             // For Identity
