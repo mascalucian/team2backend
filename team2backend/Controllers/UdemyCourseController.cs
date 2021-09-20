@@ -21,6 +21,8 @@ namespace team2backend.Controllers
         private const int NUMBER_OF_COURSES_PER_PAGE = 12;
         private readonly IConfiguration configuration;
 
+
+
         public UdemyCourseController(IConfiguration configuration)
         {
             this.configuration = configuration;
