@@ -1,16 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 using team2backend.Authentication;
-using team2backend.Data;
-using team2backend.Dtos;
+using team2backend.Interfaces;
 using team2backend.Models;
+using team2backend.Services;
 
 namespace team2backend.Controllers
 {
@@ -18,22 +13,19 @@ namespace team2backend.Controllers
     [ApiController]
     public class SkillsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ISkillsRepository skillRepository;
         private readonly IHubContext<MessageHub> hub;
-        private readonly IMapper mapper;
 
-        public SkillsController(ApplicationDbContext context, IHubContext<MessageHub> hub, IMapper mapper)
+        public SkillsController(ISkillsRepository skillRepository, IHubContext<MessageHub> hub)
         {
-            _context = context;
+            this.skillRepository = skillRepository;
             this.hub = hub;
-            this.mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllSkills()
         {
-            var skills = await _context.Skills.ToListAsync();
-            return Ok(skills);
+            return Ok(skillRepository.GetAllSkills());
         }
 
         [HttpGet("{id}")]
@@ -41,10 +33,7 @@ namespace team2backend.Controllers
         {
             try
             {
-                var skill = await _context.Skills
-                    .FirstOrDefaultAsync(m => m.Id == id);
-                var getSkillById = mapper.Map<GetSkillByIdDto>(skill);
-                return Ok(getSkillById);
+                return Ok(skillRepository.GetSkillById(id));
             }
             catch
             {
@@ -56,19 +45,11 @@ namespace team2backend.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateNewSkill([FromBody] Skill skill)
         {
+            if (skillRepository.CreateNewSkill(skill) == null) return BadRequest();
             if (ModelState.IsValid)
             {
-                var checkSkill = await _context.Skills
-                   .FirstOrDefaultAsync(m => m.Name == skill.Name);
-                if (checkSkill != null) return BadRequest();
-                var content = UdemyCourseController.GetSearchResults(skill.Name, 1);
-                var json = JObject.Parse(content);
-                var numberOfCoursesPerSearch = json.Value<long>("count");
-                if (numberOfCoursesPerSearch == 0) return BadRequest();
-                _context.Add(skill);
-                await _context.SaveChangesAsync();
-                hub.Clients.All.SendAsync("SkillCreated", skill);
-                return Ok();
+                await hub.Clients.All.SendAsync("SkillCreated", skill);
+                return Ok(skillRepository.CreateNewSkill(skill));
             }
             else
             {
@@ -80,17 +61,10 @@ namespace team2backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] Skill updatedSkill)
         {
-            var skillToUpdate = await _context.Skills.FindAsync(id);
-
-            if (skillToUpdate != null)
+            if (skillRepository.Edit(id: id, updatedSkill: updatedSkill) != null)
             {
-                skillToUpdate.Name = updatedSkill.Name;
-                var recommendations = _context.Recomandations.Where(_ => _.SkillId == id).ToList();
-                recommendations.ForEach(_ => _.SkillName = skillToUpdate.Name);
-                _context.Recomandations.UpdateRange(recommendations);
-                await _context.SaveChangesAsync();
-                hub.Clients.All.SendAsync("SkillUpdated", skillToUpdate);
-                return Ok();
+                await hub.Clients.All.SendAsync("SkillUpdated", skillRepository.Edit(id: id, updatedSkill: updatedSkill));
+                return Ok(skillRepository.Edit(id: id, updatedSkill: updatedSkill));
             }
             else
             {
@@ -102,12 +76,9 @@ namespace team2backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var skill = await _context.Skills.FindAsync(id);
-            _context.Skills.Remove(skill);
-            _context.Recomandations.RemoveRange(_context.Recomandations.Where(_ => _.SkillId == id));
-            _context.Skills.RemoveRange(_context.Skills.Where(_ => _.ParentId == id));
-            await _context.SaveChangesAsync();
-            hub.Clients.All.SendAsync("SkillDeleted", skill);
+            var skillToBeDeleted = skillRepository.GetSkillById(id);
+            skillRepository.Delete(id);
+            await hub.Clients.All.SendAsync("SkillDeleted", skillToBeDeleted);
             return Ok();
         }
     }
