@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +10,14 @@ namespace team2backend.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
-   
+
     public class HealthController : Controller
     {
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult Get()
         {
-            return new string[] { "Version 1.0" };
 
+            return Json(new { Version = "Version 1.0" });
         }
 
     }
