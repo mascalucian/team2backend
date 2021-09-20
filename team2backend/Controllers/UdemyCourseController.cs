@@ -27,6 +27,10 @@ namespace team2backend.Controllers
             API_KEY = GetApiKey();
         }
 
+        public UdemyCourseController()
+        {
+        }
+
         [NonAction]
         public string GetApiKey()
         {
