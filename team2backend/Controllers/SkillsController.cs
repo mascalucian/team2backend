@@ -33,8 +33,7 @@ namespace team2backend.Controllers
         public async Task<IActionResult> GetAllSkills()
         {
             var skills = await _context.Skills.ToListAsync();
-            var getAllSkillsDto = mapper.Map<IEnumerable<GetAllSkillsDto>>(skills);
-            return Ok(getAllSkillsDto);
+            return Ok(skills);
         }
 
         [HttpGet("{id}")]
