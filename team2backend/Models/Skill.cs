@@ -11,6 +11,8 @@ namespace team2backend.Models
 
         public string Name { get; set; }
 
+        public int ParentId { get; set; }
+
         public IEnumerable<Recomandation> Recomandations { get; set; }
     }
 }
