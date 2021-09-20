@@ -36,6 +36,7 @@ namespace team2backend
                 // If the client hasn't specified the API version in the request, use the default API version number 
                 config.AssumeDefaultVersionWhenUnspecified = true;
                 config.ReportApiVersions = true;
+
             });
 
             // For Entity Framework
