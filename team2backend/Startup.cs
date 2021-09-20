@@ -14,6 +14,8 @@ using team2backend.Authentication;
 using team2backend.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using team2backend.Interfaces;
+using team2backend.Services;
 
 namespace team2backend
 {
@@ -110,6 +112,8 @@ namespace team2backend
             services.AddSignalR();
             services.AddAutoMapper(
                 AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<ISkillsRepository, DbSkillRepository>();
+            services.AddScoped<IRecommendationsRepository, DbRecommendationRepository>();
         }
 
         private string GetConnectionString()
