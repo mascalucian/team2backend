@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.SignalR;
 using team2backend.Authentication;
 using team2backend.Interfaces;
 using team2backend.Models;
-using team2backend.Services;
 
 namespace team2backend.Controllers
 {

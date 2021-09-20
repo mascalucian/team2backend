@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using team2backend.Controllers;
 using team2backend.Data;
