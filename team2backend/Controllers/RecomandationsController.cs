@@ -1,17 +1,13 @@
-﻿namespace team2backend.Controllers
-{
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using AutoMapper;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.SignalR;
-    using Microsoft.EntityFrameworkCore;
-    using team2backend.Data;
-    using team2backend.Dtos;
-    using team2backend.Models;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using team2backend.Dtos;
+using team2backend.Interfaces;
+using team2backend.Models;
 
+namespace team2backend.Controllers
+{
     /// <summary>
     ///   RecomandationController />.
     /// </summary>
@@ -19,17 +15,15 @@
     [ApiController]
     public class RecomandationsController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly IHubContext<MessageHub> hub;
-        private readonly IMapper mapper;
+        private readonly IRecommendationsRepository recommendationRepository;
 
         /// <summary>Initializes a new instance of the <see cref="RecomandationsController" /> class.</summary>
         /// <param name="context">The context.</param>
-        public RecomandationsController(ApplicationDbContext context, IHubContext<MessageHub> hub, IMapper mapper)
+        public RecomandationsController(IHubContext<MessageHub> hub, IRecommendationsRepository recommendationRepository)
         {
-            _context = context;
             this.hub = hub;
-            this.mapper = mapper;
+            this.recommendationRepository = recommendationRepository;
         }
 
         /// <summary>Gets the recomandations.</summary>
@@ -40,17 +34,27 @@
         [HttpGet("{skillId}")]
         public async Task<IActionResult> GetRecomandationsBySkillId(int skillId)
         {
-            var recomandations = await _context.Recomandations.Where(sId => sId.SkillId == skillId)
-                .Distinct().ToListAsync();
-            return Ok(recomandations);
+            try
+            {
+                return Ok(recommendationRepository.GetRecomandationsBySkillId(skillId));
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetRecomandationsForUser(string userId)
         {
-            var recomandations = await _context.Recomandations.Where(recommendationId => recommendationId.UserId == userId)
-                .Distinct().ToListAsync();
-            return Ok(recomandations);
+            try
+            {
+                return Ok(recommendationRepository.GetRecomandationsForUser(userId));
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         /// <summary>Creates the recomandation.</summary>
@@ -67,14 +71,10 @@
 
             try
             {
-                var skill = await _context.Skills
-                    .FirstOrDefaultAsync(_ => _.Id == recomandation.SkillId);
-                recomandation.SkillName = skill.Name;
-                _context.Recomandations.Add(recomandation);
-                await _context.SaveChangesAsync();
-                var response = new { recomandation, skill };
+                var response = recommendationRepository.CreateRecomandation(recomandation);
+
                 // We don't use Put or Delete methods in our app so only this should broadcast.
-                hub.Clients.All.SendAsync("RecommendationAdded", response);
+                await hub.Clients.All.SendAsync("RecommendationAdded", response);
                 return Ok();
             }
             catch
@@ -91,17 +91,12 @@
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] EditRecommendationDto recomandationUpdatedDto)
         {
-            var recomandationToUpdate = await _context.Recomandations.FindAsync(id);
-
-            if (recomandationToUpdate != null)
+            try
             {
-                var recommendation = mapper.Map<Recomandation>(recomandationUpdatedDto);
-                recomandationToUpdate.Rating = recommendation.Rating;
-                recomandationToUpdate.Feedback = recommendation.Feedback;
-                await _context.SaveChangesAsync();
+                recommendationRepository.Edit(id, recomandationUpdatedDto);
                 return Ok();
             }
-            else
+            catch
             {
                 return NotFound();
             }
@@ -114,10 +109,15 @@
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecomandation(int id)
         {
-            var recomandation = await _context.Recomandations.FindAsync(id);
-            _context.Recomandations.Remove(recomandation);
-            await _context.SaveChangesAsync();
-            return Ok();
+            try
+            {
+                recommendationRepository.DeleteRecomandation(id);
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
     }
 }
