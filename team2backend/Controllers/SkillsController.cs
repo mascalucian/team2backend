@@ -85,6 +85,9 @@ namespace team2backend.Controllers
             if (skillToUpdate != null)
             {
                 skillToUpdate.Name = updatedSkill.Name;
+                var recommendations = _context.Recomandations.Where(_ => _.SkillId == id).ToList();
+                recommendations.ForEach(_ => _.SkillName = skillToUpdate.Name);
+                _context.Recomandations.UpdateRange(recommendations);
                 await _context.SaveChangesAsync();
                 hub.Clients.All.SendAsync("SkillUpdated", skillToUpdate);
                 return Ok();
@@ -102,6 +105,7 @@ namespace team2backend.Controllers
             var skill = await _context.Skills.FindAsync(id);
             _context.Skills.Remove(skill);
             _context.Recomandations.RemoveRange(_context.Recomandations.Where(_ => _.SkillId == id));
+            _context.Skills.RemoveRange(_context.Skills.Where(_ => _.ParentId == id));
             await _context.SaveChangesAsync();
             hub.Clients.All.SendAsync("SkillDeleted", skill);
             return Ok();
