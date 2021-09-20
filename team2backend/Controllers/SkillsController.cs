@@ -55,11 +55,10 @@ namespace team2backend.Controllers
 
         [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
-        public async Task<IActionResult> CreateNewSkill([FromBody] CreateNewSkillDto skillDto)
+        public async Task<IActionResult> CreateNewSkill([FromBody] Skill skill)
         {
             if (ModelState.IsValid)
             {
-                var skill = mapper.Map<Skill>(skillDto);
                 var checkSkill = await _context.Skills
                    .FirstOrDefaultAsync(m => m.Name == skill.Name);
                 if (checkSkill != null) return BadRequest();
@@ -69,7 +68,7 @@ namespace team2backend.Controllers
                 if (numberOfCoursesPerSearch == 0) return BadRequest();
                 _context.Add(skill);
                 await _context.SaveChangesAsync();
-                hub.Clients.All.SendAsync("SkillCreated", skillDto);
+                hub.Clients.All.SendAsync("SkillCreated", skill);
                 return Ok();
             }
             else
@@ -80,16 +79,15 @@ namespace team2backend.Controllers
 
         [Authorize(Roles = UserRoles.Admin)]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, [FromBody] CreateNewSkillDto updatedSkillDto)
+        public async Task<IActionResult> Edit(int id, [FromBody] Skill updatedSkill)
         {
             var skillToUpdate = await _context.Skills.FindAsync(id);
 
             if (skillToUpdate != null)
             {
-                skillToUpdate.Name = updatedSkillDto.Name;
+                skillToUpdate.Name = updatedSkill.Name;
                 await _context.SaveChangesAsync();
-                var skillDto = mapper.Map<CreateNewSkillDto>(skillToUpdate);
-                hub.Clients.All.SendAsync("SkillUpdated", skillDto);
+                hub.Clients.All.SendAsync("SkillUpdated", skillToUpdate);
                 return Ok();
             }
             else
@@ -106,8 +104,7 @@ namespace team2backend.Controllers
             _context.Skills.Remove(skill);
             _context.Recomandations.RemoveRange(_context.Recomandations.Where(_ => _.SkillId == id));
             await _context.SaveChangesAsync();
-            var skillDto = mapper.Map<CreateNewSkillDto>(skill);
-            hub.Clients.All.SendAsync("SkillDeleted", skillDto);
+            hub.Clients.All.SendAsync("SkillDeleted", skill);
             return Ok();
         }
     }
