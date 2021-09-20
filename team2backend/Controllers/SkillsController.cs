@@ -89,7 +89,7 @@ namespace team2backend.Controllers
                 recommendations.ForEach(_ => _.SkillName = skillToUpdate.Name);
                 _context.Recomandations.UpdateRange(recommendations);
                 await _context.SaveChangesAsync();
-                hub.Clients.All.SendAsync("SkillUpdated", skillToUpdate);
+                hub.Clients.All.SendAsync("SkillUpdated", updatedSkill);
                 return Ok();
             }
             else
