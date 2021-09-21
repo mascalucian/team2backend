@@ -16,6 +16,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using team2backend.Interfaces;
 using team2backend.Services;
+using team2backend.Helpers;
 
 namespace team2backend
 {
@@ -172,6 +173,8 @@ namespace team2backend
                 endpoints.MapRazorPages();
                 endpoints.MapHub<MessageHub>("/message-hub");
             });
+
+            DataTools.SeedData(app);
         }
     }
 }
