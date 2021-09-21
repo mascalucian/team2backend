@@ -70,12 +70,11 @@ namespace team2backend.Services
             return getAllSkillsDto;
         }
 
-        public GetSkillByIdDto GetSkillById(int id)
+        public Skill GetSkillById(int id)
         {
             var skill = _context.Skills
                     .FirstOrDefault(m => m.Id == id);
-            var getSkillById = mapper.Map<GetSkillByIdDto>(skill);
-            return getSkillById;
+            return skill;
         }
     }
 }

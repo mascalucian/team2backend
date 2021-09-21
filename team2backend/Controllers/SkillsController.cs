@@ -62,7 +62,7 @@ namespace team2backend.Controllers
         {
             if (skillRepository.Edit(id: id, updatedSkill: updatedSkill) != null)
             {
-                await hub.Clients.All.SendAsync("SkillUpdated", skillRepository.Edit(id: id, updatedSkill: updatedSkill));
+                await hub.Clients.All.SendAsync("SkillUpdated", updatedSkill);
                 return Ok(skillRepository.Edit(id: id, updatedSkill: updatedSkill));
             }
             else

@@ -14,6 +14,6 @@ namespace team2backend.Interfaces
 
         IEnumerable<GetAllSkillsDto> GetAllSkills();
 
-        GetSkillByIdDto GetSkillById(int id);
+        Skill GetSkillById(int id);
     }
 }
