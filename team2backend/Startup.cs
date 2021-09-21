@@ -172,6 +172,7 @@ namespace team2backend
                 endpoints.MapRazorPages();
                 endpoints.MapHub<MessageHub>("/message-hub");
             });
+            app.SeedData();
         }
     }
 }
