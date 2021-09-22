@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using team2backend.Authentication;
 using team2backend.Interfaces;
 using team2backend.Models;
+using team2backend.Services;
 
 namespace team2backend.Controllers
 {
@@ -14,11 +16,13 @@ namespace team2backend.Controllers
     {
         private readonly ISkillsRepository skillRepository;
         private readonly IHubContext<MessageHub> hub;
+        private readonly IUdemyCourseService udemyCourseService;
 
-        public SkillsController(ISkillsRepository skillRepository, IHubContext<MessageHub> hub)
+        public SkillsController(ISkillsRepository skillRepository, IHubContext<MessageHub> hub, IUdemyCourseService udemyCourseService)
         {
             this.skillRepository = skillRepository;
             this.hub = hub;
+            this.udemyCourseService = udemyCourseService;
         }
 
         [HttpGet]
@@ -44,11 +48,14 @@ namespace team2backend.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateNewSkill([FromBody] Skill skill)
         {
-            if (skillRepository.CreateNewSkill(skill) == null) return BadRequest();
+            var checkName = skillRepository.GetAllSkills().FirstOrDefault(_ => _.Name == skill.Name);
+            if (checkName != null) return UnprocessableEntity();
+            if (!udemyCourseService.HasResults(skill.Name)) return BadRequest();
             if (ModelState.IsValid)
             {
                 await hub.Clients.All.SendAsync("SkillCreated", skill);
-                return Ok(skillRepository.CreateNewSkill(skill));
+                skillRepository.CreateNewSkill(skill);
+                return Ok();
             }
             else
             {

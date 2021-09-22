@@ -25,11 +25,6 @@ namespace team2backend.Services
 
         public Skill CreateNewSkill(Skill skill)
         {
-            var checkSkill = _context.Skills
-                   .FirstOrDefault(m => m.Name == skill.Name);
-            if (checkSkill != null) return null;
-            var hasResults = udemyCourseService.HasResults(skill.Name);
-            if (!hasResults) return null;
             _context.Add(skill);
             _context.SaveChanges();
             return skill;
