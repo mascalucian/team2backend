@@ -14,11 +14,13 @@ namespace team2backend.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper mapper;
+        private readonly IUdemyCourseService udemyCourseService;
 
-        public DbSkillRepository(ApplicationDbContext context, IMapper mapper)
+        public DbSkillRepository(ApplicationDbContext context, IMapper mapper, IUdemyCourseService udemyCourseService)
         {
             _context = context;
             this.mapper = mapper;
+            this.udemyCourseService = udemyCourseService;
         }
 
         public Skill CreateNewSkill(Skill skill)
@@ -26,10 +28,8 @@ namespace team2backend.Services
             var checkSkill = _context.Skills
                    .FirstOrDefault(m => m.Name == skill.Name);
             if (checkSkill != null) return null;
-            var content = UdemyCourseController.GetSearchResults(skill.Name, 1);
-            var json = JObject.Parse(content);
-            var numberOfCoursesPerSearch = json.Value<long>("count");
-            if (numberOfCoursesPerSearch == 0) return null;
+            var hasResults = udemyCourseService.HasResults(skill.Name);
+            if (!hasResults) return null;
             _context.Add(skill);
             _context.SaveChanges();
             return skill;

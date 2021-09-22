@@ -115,6 +115,7 @@ namespace team2backend
                 AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<ISkillsRepository, DbSkillRepository>();
             services.AddScoped<IRecommendationsRepository, DbRecommendationRepository>();
+            services.AddSingleton<IUdemyCourseService, UdemyCourseService>();
         }
 
         private string GetConnectionString()
