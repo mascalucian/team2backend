@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,8 +13,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using team2backend.Authentication;
 using team2backend.Data;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
 using team2backend.Interfaces;
 using team2backend.Services;
 
@@ -48,6 +47,7 @@ namespace team2backend
 
             // For Identity
             services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -123,20 +123,18 @@ namespace team2backend
             {
                 return ConvertConnectionString(connectionString);
             }
+
             return Configuration.GetConnectionString("DefaultConnection");
         }
 
         public static string ConvertConnectionString(string connectionString)
         {
-
-
             Uri uri = new Uri(connectionString);
-
-
 
             string converted = $"Database={uri.AbsolutePath.TrimStart('/')};Host={uri.Host};Port={uri.Port};User Id={uri.UserInfo.Split(":")[0]};Password={uri.UserInfo.Split(":")[1]};SSL Mode=Require;Trust Server Certificate=true";
             return converted;
         }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -172,6 +170,7 @@ namespace team2backend
                 endpoints.MapRazorPages();
                 endpoints.MapHub<MessageHub>("/message-hub");
             });
+            app.SeedData();
         }
     }
 }
