@@ -25,7 +25,7 @@ namespace team2backend.Controllers
             this.hub = hub;
             this.udemyCourseService = udemyCourseService;
         }
-        [Authorize]
+
         [HttpGet]
         public async Task<IActionResult> GetAllSkills()
         {
