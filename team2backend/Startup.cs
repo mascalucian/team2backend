@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Mvc;
 using team2backend.Interfaces;
 using team2backend.Services;
 using team2backend.Helpers;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication;
 
 namespace team2backend
 {
@@ -44,12 +46,13 @@ namespace team2backend
 
             // For Entity Framework
             services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(GetConnectionString()));
+                options.UseNpgsql(GetConnectionString()));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             // For Identity
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
@@ -73,30 +76,28 @@ namespace team2backend
                 options.User.RequireUniqueEmail = false;
             });
 
-            // Adding Authentication
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+            services.AddIdentityServer()
+                .AddInMemoryApiResources(Configuration.GetSection("IdentityServer:ApiResources"))
+                    .AddInMemoryIdentityResources(Configuration.GetSection("IdentityServer:IdentityResources"))
+                    .AddInMemoryClients(Configuration.GetSection("IdentityServer:Clients"))
+                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>()
+                .AddProfileService<ProfileService>();
 
-            // Adding Jwt Bearer
-            .AddJwtBearer(options =>
+            services.AddAuthentication()
+                .AddIdentityServerJwt();
+
+            services.ConfigureApplicationCookie(config =>
             {
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidAudience = Configuration["JWT:ValidAudience"],
-                    ValidIssuer = Configuration["JWT:ValidIssuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"])),
-                };
+                config.Cookie.Name = "IdentityServer.Cookie";
+                config.LoginPath = "/Identity/Account/Login";
+                config.LogoutPath = "/Identity/Account/Logout";
             });
+            // });
+            services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+    .AddAzureAD(options => Configuration.Bind("AzureAd", options));
 
-            services.AddControllers();
+
+            services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddSwaggerGen(c =>
             {

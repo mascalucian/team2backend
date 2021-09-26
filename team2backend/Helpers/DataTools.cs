@@ -27,15 +27,15 @@ namespace team2backend.Helpers
 
                 foreach (var _ in teamMembers)
                 {
-                    var userName = "admin_" + _;
+                    var userName = "admin_" + _ + "@team2backend.ro";
                     var userExists = await userManager.FindByNameAsync(userName);
                     if (userExists == null)
                     {
                         ApplicationUser user = new ApplicationUser()
                         {
-                            Email = _ + "@team2backend.ro",
+                            Email = "admin_" + _ + "@team2backend.ro",
                             SecurityStamp = Guid.NewGuid().ToString(),
-                            UserName = userName,
+                            UserName = "admin_" + _ + "@team2backend.ro",
                         };
                         await userManager.CreateAsync(user, "Pass123$");
                         await userManager.AddToRoleAsync(user, UserRoles.Admin);
