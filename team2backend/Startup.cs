@@ -164,6 +164,7 @@ namespace team2backend
             app.UseCors("CorsApi");
 
             app.UseAuthentication();
+            app.UseIdentityServer();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -174,6 +175,11 @@ namespace team2backend
                    pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
                 endpoints.MapHub<MessageHub>("/message-hub");
+            });
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedProto
             });
 
             DataTools.SeedData(app);
