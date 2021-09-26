@@ -101,6 +101,7 @@ namespace team2backend.Controllers
             {
                 await userManager.AddToRoleAsync(user, UserRoles.User);
             }
+
             return Ok(new ResponseAuth { Status = "Success", Message = "User created successfully!" });
         }
 

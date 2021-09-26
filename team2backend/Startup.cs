@@ -1,19 +1,20 @@
 using System;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
 using team2backend.Authentication;
 using team2backend.Data;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
 using team2backend.Interfaces;
 using team2backend.Services;
 
@@ -31,10 +32,34 @@ namespace team2backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Adding Authentication
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApp(options =>
+                {
+                    this.Configuration.GetSection("AzureAd").Bind(options);
+                    options.Events.OnRedirectToIdentityProvider = context =>
+                    {
+                        if (context.HttpContext.Items.ContainsKey("allowRedirect"))
+                        {
+                            return Task.CompletedTask;
+                        }
+
+                        context.HandleResponse();
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        return Task.CompletedTask;
+                    };
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.DefaultPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+            });
+
             services.AddApiVersioning(config =>
             {
                 // Specify the default API Version as 1.0
                 config.DefaultApiVersion = new ApiVersion(1, 0);
+
                 // If the client hasn't specified the API version in the request, use the default API version number 
                 config.AssumeDefaultVersionWhenUnspecified = true;
                 config.ReportApiVersions = true;
@@ -53,47 +78,44 @@ namespace team2backend
 
             services.Configure<IdentityOptions>(options =>
             {
-                // Password settings.
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequiredLength = 6;
-                options.Password.RequiredUniqueChars = 1;
+                //    // Password settings.
+                //    options.Password.RequireDigit = true;
+                //    options.Password.RequireLowercase = true;
+                //    options.Password.RequireNonAlphanumeric = true;
+                //    options.Password.RequireUppercase = true;
+                //    options.Password.RequiredLength = 6;
+                //    options.Password.RequiredUniqueChars = 1;
 
-                // Lockout settings.
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(3);
-                options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.AllowedForNewUsers = true;
+                //    // Lockout settings.
+                //    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(3);
+                //    options.Lockout.MaxFailedAccessAttempts = 5;
+                //    options.Lockout.AllowedForNewUsers = true;
 
                 // User settings.
-                options.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                options.User.RequireUniqueEmail = false;
+                options.User.RequireUniqueEmail = true;
             });
 
-            // Adding Authentication
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+            //services.AddAuthentication(options =>
+            //{
+            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            //})
 
             // Adding Jwt Bearer
-            .AddJwtBearer(options =>
-            {
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidAudience = Configuration["JWT:ValidAudience"],
-                    ValidIssuer = Configuration["JWT:ValidIssuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"])),
-                };
-            });
+            //.AddJwtBearer(options =>
+            //{
+            //    options.SaveToken = true;
+            //    options.RequireHttpsMetadata = false;
+            //    options.TokenValidationParameters = new TokenValidationParameters()
+            //    {
+            //        ValidateIssuer = true,
+            //        ValidateAudience = true,
+            //        ValidAudience = Configuration["JWT:ValidAudience"],
+            //        ValidIssuer = Configuration["JWT:ValidIssuer"],
+            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"])),
+            //    };
+            //});
 
             services.AddControllers();
             services.AddRazorPages();
@@ -101,14 +123,14 @@ namespace team2backend
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "team2backend", Version = "v1" });
             });
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsApi",
-                    builder => builder.WithOrigins("http://localhost:8080", "https://team2-frontend.herokuapp.com")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials());
-            });
+            //services.AddCors(options =>
+            //{
+            //    options.AddPolicy("CorsApi",
+            //        builder => builder.WithOrigins("http://localhost:8080", "https://team2-frontend.herokuapp.com")
+            //            .AllowAnyHeader()
+            //            .AllowAnyMethod()
+            //            .AllowCredentials());
+            //});
             services.AddSignalR();
             services.AddAutoMapper(
                 AppDomain.CurrentDomain.GetAssemblies());
@@ -123,20 +145,17 @@ namespace team2backend
             {
                 return ConvertConnectionString(connectionString);
             }
+
             return Configuration.GetConnectionString("DefaultConnection");
         }
 
         public static string ConvertConnectionString(string connectionString)
         {
-
-
             Uri uri = new Uri(connectionString);
-
-
-
             string converted = $"Database={uri.AbsolutePath.TrimStart('/')};Host={uri.Host};Port={uri.Port};User Id={uri.UserInfo.Split(":")[0]};Password={uri.UserInfo.Split(":")[1]};SSL Mode=Require;Trust Server Certificate=true";
             return converted;
         }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -154,6 +173,8 @@ namespace team2backend
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseCors(policyBuilder => policyBuilder.AllowCredentials().SetIsOriginAllowed(origin => true).AllowAnyHeader().WithExposedHeaders("Location"));
 
             app.UseHttpsRedirection();
 
