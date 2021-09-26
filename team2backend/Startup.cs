@@ -20,6 +20,8 @@ using team2backend.Helpers;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.HttpOverrides;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 
 namespace team2backend
 {
@@ -78,14 +80,26 @@ namespace team2backend
             });
 
             services.AddIdentityServer()
+                .AddDeveloperSigningCredential()
+                .AddInMemoryApiScopes(Configuration.GetSection("IdentityServer:ApiScopes"))
                 .AddInMemoryApiResources(Configuration.GetSection("IdentityServer:ApiResources"))
-                    .AddInMemoryIdentityResources(Configuration.GetSection("IdentityServer:IdentityResources"))
-                    .AddInMemoryClients(Configuration.GetSection("IdentityServer:Clients"))
+                .AddInMemoryClients(Configuration.GetSection("IdentityServer:Clients"))
+                .AddInMemoryIdentityResources(Configuration.GetSection("IdentityServer:IdentityResources"))
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>()
                 .AddProfileService<ProfileService>();
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
+            services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+                .AddAzureAD(options => Configuration.Bind("AzureAd", options));
+
+            //        services.Configure<JwtBearerOptions>(
+            //IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
+            //options =>
+            //{
+            //    options.Authority = "http://localhost:5001";
+            //    options.Audience = "http://localhost:8080";
+            //});
 
             services.ConfigureApplicationCookie(config =>
             {
@@ -93,10 +107,6 @@ namespace team2backend
                 config.LoginPath = "/Identity/Account/Login";
                 config.LogoutPath = "/Identity/Account/Logout";
             });
-            // });
-            services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-    .AddAzureAD(options => Configuration.Bind("AzureAd", options));
-
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -104,6 +114,7 @@ namespace team2backend
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "team2backend", Version = "v1" });
             });
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsApi",
@@ -112,12 +123,23 @@ namespace team2backend
                         .AllowAnyMethod()
                         .AllowCredentials());
             });
+
             services.AddSignalR();
             services.AddAutoMapper(
                 AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<ISkillsRepository, DbSkillRepository>();
             services.AddScoped<IRecommendationsRepository, DbRecommendationRepository>();
             services.AddSingleton<IUdemyCourseService, UdemyCourseService>();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = 401;
+                    return Task.CompletedTask;
+                };
+            });
+
         }
 
         private string GetConnectionString()
@@ -160,6 +182,12 @@ namespace team2backend
             }
 
             app.UseHttpsRedirection();
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedProto,
+            });
+
+
 
             app.UseRouting();
             app.UseCors("CorsApi");
@@ -177,12 +205,6 @@ namespace team2backend
                 endpoints.MapRazorPages();
                 endpoints.MapHub<MessageHub>("/message-hub");
             });
-
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedProto
-            });
-
             DataTools.SeedData(app);
         }
     }
