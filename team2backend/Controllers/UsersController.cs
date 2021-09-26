@@ -3,7 +3,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using team2backend.Authentication;
-using team2backend.Data;
 using team2backend.Dtos;
 
 namespace team2backend.Controllers
@@ -36,8 +35,8 @@ namespace team2backend.Controllers
             return NotFound();
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> SetUserRoles(string id, [FromBody] string[] roles)
+        [HttpPost("{id}")]
+        public async Task<IActionResult> AddRolesForUser(string id, [FromBody] string[] roles)
         {
             var user = await userManager.FindByIdAsync(id);
             if (user != null)
