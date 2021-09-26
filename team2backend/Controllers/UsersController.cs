@@ -42,5 +42,24 @@ namespace team2backend.Controllers
             }
             return NotFound();
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> SetUserRoles(string id, [FromBody] string[] roles)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                foreach(var role in roles)
+                {
+                    if (!await userManager.IsInRoleAsync(user, role))
+                    {
+                        await userManager.AddToRoleAsync(user, role);
+                    }
+                }
+                return Ok();
+            }
+            return NotFound();
+        }
+
     }
 }
