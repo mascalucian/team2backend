@@ -42,5 +42,21 @@ namespace team2backend.Controllers
             }
             return NotFound();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUsers()
+        {
+            var task = Task.Run(() => userManager.Users.ToList());
+            var users = await task;
+            var usersDto = mapper.Map<List<ApplicationUser>, List<ReadUserDto>>(users);
+            foreach (var user in usersDto)
+            {
+                var userTask = Task.Run(() => userManager.FindByIdAsync(user.Id));
+                var identityUser = await userTask;
+                var rolesTask = Task.Run(() => userManager.GetRolesAsync(identityUser));
+                user.Roles = await rolesTask;
+            }
+            return Ok(usersDto);
+        }
     }
 }

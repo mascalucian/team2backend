@@ -19,6 +19,7 @@ using team2backend.Services;
 using team2backend.Helpers;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace team2backend
 {
