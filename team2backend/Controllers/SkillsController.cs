@@ -14,8 +14,6 @@ using team2backend.Services;
 
 namespace team2backend.Controllers
 {
-    [Authorize(AuthenticationSchemes = IdentityServerJwtConstants.IdentityServerJwtBearerScheme)]
-    [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("[controller]")]
     [ApiController]
     public class SkillsController : Controller
@@ -51,7 +49,6 @@ namespace team2backend.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         public async Task<IActionResult> CreateNewSkill([FromBody] Skill skill)
         {
@@ -70,7 +67,6 @@ namespace team2backend.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] Skill updatedSkill)
         {
@@ -85,7 +81,6 @@ namespace team2backend.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

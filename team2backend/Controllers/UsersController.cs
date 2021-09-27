@@ -88,6 +88,7 @@ namespace team2backend.Controllers
             var user = await userManager.FindByIdAsync(id);
             if (user != null)
             {
+                if (roles == null || roles.Length == 0) return BadRequest();
                 var userRoles = await userManager.GetRolesAsync(user);
                 await userManager.RemoveFromRolesAsync(user, userRoles.ToArray());
                 foreach (var role in roles)
