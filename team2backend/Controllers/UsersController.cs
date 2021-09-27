@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using team2backend.Authentication;
 using team2backend.Authentication.Models;
 using team2backend.Data;
@@ -53,7 +54,7 @@ namespace team2backend.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, new ResponseAuth { Status = "Error", Message = "User already exists!" });
             }
 
-            ApplicationUser newUser = new ()
+            ApplicationUser newUser = new()
             {
                 Email = user.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -80,18 +81,18 @@ namespace team2backend.Controllers
 
         }
 
-        [HttpPost("{id}")]
+
+        [HttpPost("{id}/roles")]
         public async Task<IActionResult> AddRolesForUser(string id, [FromBody] string[] roles)
         {
             var user = await userManager.FindByIdAsync(id);
             if (user != null)
             {
+                var userRoles = await userManager.GetRolesAsync(user);
+                await userManager.RemoveFromRolesAsync(user, userRoles.ToArray());
                 foreach (var role in roles)
                 {
-                    if (!await userManager.IsInRoleAsync(user, role))
-                    {
-                        await userManager.AddToRoleAsync(user, role);
-                    }
+                    await userManager.AddToRoleAsync(user, role);
                 }
 
                 return Ok();
