@@ -18,6 +18,7 @@ namespace team2backend.Controllers
         private readonly IHubContext<MessageHub> hub;
         private readonly IUdemyCourseService udemyCourseService;
 
+
         public SkillsController(ISkillsRepository skillRepository, IHubContext<MessageHub> hub, IUdemyCourseService udemyCourseService)
         {
             this.skillRepository = skillRepository;

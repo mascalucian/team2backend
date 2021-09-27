@@ -112,9 +112,9 @@ namespace team2backend.Areas.Identity.Pages.Account
                 var registerResult = await _userManager.CreateAsync(user);
                 if (registerResult.Succeeded)
                 {
-                    if (!await _roleManager.RoleExistsAsync("Expert"))
-                        await _roleManager.CreateAsync(new IdentityRole("Expert"));
-                    await _userManager.AddToRoleAsync(user, "Expert");
+                    if (!await _roleManager.RoleExistsAsync("User"))
+                        await _roleManager.CreateAsync(new IdentityRole("User"));
+                    await _userManager.AddToRoleAsync(user, "User");
                     return LocalRedirect(returnUrl);
                 }
                 return Page();
@@ -143,7 +143,9 @@ namespace team2backend.Areas.Identity.Pages.Account
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-
+                        if (!await _roleManager.RoleExistsAsync("User"))
+                            await _roleManager.CreateAsync(new IdentityRole("User"));
+                        await _userManager.AddToRoleAsync(user, "User");
                         var userId = await _userManager.GetUserIdAsync(user);
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
