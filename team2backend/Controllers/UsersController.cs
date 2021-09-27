@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -55,5 +56,21 @@ namespace team2backend.Controllers
             return NotFound();
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUserRole(string id, [FromBody] string role)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                if (!await userManager.IsInRoleAsync(user, role))
+                {
+                    await userManager.RemoveFromRoleAsync(user, role);
+                }
+
+                return Ok();
+            }
+
+            return NotFound();
+        }
     }
 }
