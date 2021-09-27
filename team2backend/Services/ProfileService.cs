@@ -28,8 +28,18 @@ namespace team2backend.Services
             var claims = new List<Claim>
         {
                 new Claim(JwtClaimTypes.Name, user.UserName),
-            new Claim(JwtClaimTypes.Role, roles.Any() ? roles.First() : "User")
         };
+            if (roles.Any())
+            {
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(JwtClaimTypes.Role, role));
+                }
+            }
+            else
+            {
+                claims.Add(new Claim(JwtClaimTypes.Role, "User"));
+            }
 
             context.IssuedClaims.AddRange(claims);
         }
