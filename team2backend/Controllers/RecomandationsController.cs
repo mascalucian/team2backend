@@ -60,7 +60,7 @@ namespace team2backend.Controllers
         /// <summary>Creates the recomandation.</summary>
         /// <param name="recomandation">The recomandation.</param>
         /// <returns>CreateRecomandation ActionResult.</returns>
-        [Authorize]
+        //[Authorize(Roles = UserRoles.Expert)]
         [HttpPost]
         public async Task<IActionResult> CreateRecomandation([FromBody] Recomandation recomandation)
         {
@@ -87,7 +87,7 @@ namespace team2backend.Controllers
         /// <param name="id">The identifier.</param>
         /// <param name="recomandationUpdated">The recomandation updated.</param>
         /// <returns>The recomandation updated ActionResult.</returns>
-        [Authorize]
+        //[Authorize(Roles = UserRoles.Expert)]
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] EditRecommendationDto recomandationUpdatedDto)
         {
@@ -105,7 +105,7 @@ namespace team2backend.Controllers
         /// <summary>Deletes the recomandation.</summary>
         /// <param name="id">The identifier.</param>
         /// <returns>Deletes the recomandation ActionResult.</returns>
-        [Authorize]
+        //[Authorize(Roles = UserRoles.Expert)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecomandation(int id)
         {
