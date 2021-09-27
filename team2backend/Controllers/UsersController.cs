@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -15,7 +16,7 @@ namespace team2backend.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IMapper mapper;
 
-        public UsersController(UserManager<ApplicationUser> userManager,  IMapper mapper)
+        public UsersController(UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             this.userManager = userManager;
             this.mapper = mapper;
