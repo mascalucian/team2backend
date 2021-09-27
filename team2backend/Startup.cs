@@ -40,7 +40,6 @@ namespace team2backend
         public void ConfigureServices(IServiceCollection services)
         {
             Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             services.AddApiVersioning(config =>
             {
@@ -97,30 +96,6 @@ namespace team2backend
                 .AddIdentityServerJwt();
             services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
                 .AddAzureAD(options => Configuration.Bind("AzureAd", options));
-            //services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-            //.AddIdentityServerAuthentication(options =>
-            //{
-            //    // base-address of your identityserver
-            //    options.Authority = "http://localhost:5001/";
-
-            //    // name of the API resource
-            //    options.ApiName = "team2backend";
-            //});
-            services.AddAuthentication("Bearer")
-        .AddIdentityServerAuthentication(options =>
-        {
-            options.Authority = "http://localhost:5001/";
-            //options.ApiName = "team2backend";
-            options.RequireHttpsMetadata = false;
-        });
-
-            //        services.Configure<JwtBearerOptions>(
-            //IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
-            //options =>
-            //{
-            //    options.Authority = "http://localhost:5001";
-            //    options.Audience = "http://localhost:8080";
-            //});
 
             services.ConfigureApplicationCookie(config =>
             {
