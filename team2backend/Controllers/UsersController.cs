@@ -1,11 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using team2backend.Authentication;
+using team2backend.Authentication.Models;
+using team2backend.Data;
 using team2backend.Dtos;
+using team2backend.Models;
 
 namespace team2backend.Controllers
 {
@@ -14,12 +20,14 @@ namespace team2backend.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
         private readonly IMapper mapper;
 
-        public UsersController(UserManager<ApplicationUser> userManager, IMapper mapper)
+        public UsersController(UserManager<ApplicationUser> userManager, IMapper mapper, RoleManager<IdentityRole> roleManager)
         {
             this.userManager = userManager;
             this.mapper = mapper;
+            this.roleManager = roleManager;
         }
 
         [HttpGet("{id}")]
@@ -35,6 +43,41 @@ namespace team2backend.Controllers
             }
 
             return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddNewUserWithRoles([FromBody] AddNewUser user)
+        {
+            if (await userManager.FindByEmailAsync(user.Email) != null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new ResponseAuth { Status = "Error", Message = "User already exists!" });
+            }
+
+            ApplicationUser newUser = new ()
+            {
+                Email = user.Email,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = user.Email,
+            };
+
+            var roles = roleManager.Roles;
+
+            var result = await userManager.CreateAsync(newUser, user.Password);
+            if (!result.Succeeded)
+                return StatusCode(StatusCodes.Status400BadRequest, new ResponseAuth { Status = "Error", Message = "User creation failed! Please check user details and try again ." });
+
+            await userManager.AddToRoleAsync(newUser, UserRoles.User);
+
+            foreach (var role in user.Roles)
+            {
+                if (!await userManager.IsInRoleAsync(newUser, role))
+                {
+                    await userManager.AddToRoleAsync(newUser, role);
+                }
+            }
+
+            return Ok(new ResponseAuth { Status = "Success", Message = "User created successfully!" });
+
         }
 
         [HttpPost("{id}")]
