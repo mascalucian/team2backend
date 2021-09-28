@@ -52,12 +52,13 @@ namespace team2backend.Controllers
         [HttpPost]
         public async Task<IActionResult> AddNewUserWithRoles([FromBody] AddNewUser user)
         {
-            if (await userManager.FindByEmailAsync(user.Email) != null)
+            var userExists = await userManager.FindByEmailAsync(user.Email);
+            if (userExists != null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, new ResponseAuth { Status = "Error", Message = "User already exists!" });
             }
 
-            ApplicationUser newUser = new ()
+            ApplicationUser newUser = new ApplicationUser()
             {
                 Email = user.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -105,8 +106,8 @@ namespace team2backend.Controllers
                 await userManager.AddToRoleAsync(newUser, "User");
             }
 
-            var userDto = mapper.Map<ReadUserDto>(user);
-            await hubContext.Clients.All.SendAsync("UserAdded", userDto);
+            //var userDto = mapper.Map<ReadUserDto>(user);
+            //await hubContext.Clients.All.SendAsync("UserAdded", userDto);
             if (badRoles.Count == 0)
             {
                 return Ok(new ResponseAuth { Status = "Success", Message = "User created successfully!" });
@@ -117,7 +118,7 @@ namespace team2backend.Controllers
             }
         }
 
-        [HttpDelete("user/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -131,7 +132,7 @@ namespace team2backend.Controllers
                 return Ok(new ResponseAuth { Status = "Success", Message = $"User {user.Email} was deleted !" });
             }
 
-            return StatusCode(StatusCodes.Status400BadRequest, new ResponseAuth { Status = "Error", Message = "Deleting user failed, user by this id does not exist!" });
+            return NotFound();
         }
 
         [HttpPost("{id}/roles")]
@@ -155,24 +156,6 @@ namespace team2backend.Controllers
             return NotFound();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserRole(string id, [FromBody] string role)
-        {
-            var user = await userManager.FindByIdAsync(id);
-            if (user != null)
-            {
-                if (!await userManager.IsInRoleAsync(user, role))
-                {
-                    await userManager.RemoveFromRoleAsync(user, role);
-                }
-
-                var userDto = mapper.Map<ReadUserDto>(user);
-                await hubContext.Clients.All.SendAsync("UserEdited", userDto);
-                return Ok();
-            }
-
-            return NotFound();
-        }
 
         [HttpGet]
         public async Task<IActionResult> GetUsers()
