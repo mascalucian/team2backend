@@ -16,7 +16,7 @@ namespace team2backend.Helpers
                 var userManager = serviceScope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
                 var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
 
-                var adminRole = await EnsureRoleCreated(serviceScope.ServiceProvider, "Administrator");
+                var adminRole = await EnsureRoleCreated(serviceScope.ServiceProvider, "Admin");
                 var operatorRole = await EnsureRoleCreated(serviceScope.ServiceProvider, "Expert");
                 var userRole = await EnsureRoleCreated(serviceScope.ServiceProvider, "User");
 
