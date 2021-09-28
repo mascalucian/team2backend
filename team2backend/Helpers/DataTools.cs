@@ -28,17 +28,17 @@ namespace team2backend.Helpers
                 };
                 ApplicationUser andreiUser = new ()
                 {
-                    Email = "andreidirlea1.97@gmail.com",
+                    Email = "andreidirleaUser.97@gmail.com",
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = "andreidirlea.97@gmail.com",
+                    UserName = "andreidirleaUser.97@gmail.com",
                 };
-                if (await userManager.FindByEmailAsync(andreiAdmin.Email) != null)
+                if (await userManager.FindByEmailAsync(andreiAdmin.Email) == null)
                 {
                     await userManager.CreateAsync(andreiAdmin, "Pass123$");
                     await userManager.AddToRoleAsync(andreiAdmin, UserRoles.Admin);
                 }
 
-                if (await userManager.FindByEmailAsync(andreiUser.Email) != null)
+                if (await userManager.FindByEmailAsync(andreiUser.Email) == null)
                 {
                     await userManager.CreateAsync(andreiUser, "Pass123$");
                     await userManager.AddToRoleAsync(andreiUser, UserRoles.User);
