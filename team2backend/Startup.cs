@@ -183,7 +183,7 @@ namespace team2backend
                 ForwardedHeaders = ForwardedHeaders.XForwardedProto,
             });
 
-
+            app.UseStaticFiles();
 
             app.UseRouting();
             app.UseCors("CorsApi");
