@@ -16,52 +16,33 @@ namespace team2backend.Helpers
                 var userManager = serviceScope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
                 var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
 
-                var adminRole = await EnsureRoleCreated(serviceScope.ServiceProvider, "Admin");
-                var operatorRole = await EnsureRoleCreated(serviceScope.ServiceProvider, "Expert");
-                var userRole = await EnsureRoleCreated(serviceScope.ServiceProvider, "User");
+                var adminRole = await EnsureRoleCreated(serviceScope.ServiceProvider, UserRoles.Admin);
+                var operatorRole = await EnsureRoleCreated(serviceScope.ServiceProvider, UserRoles.Expert);
+                var userRole = await EnsureRoleCreated(serviceScope.ServiceProvider, UserRoles.User);
 
                 ApplicationUser andreiAdmin = new ()
                 {
                     Email = "andreidirlea.97@gmail.com",
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = "AndreiAdmin",
+                    UserName = "andreidirlea.97@gmail.com",
                 };
                 ApplicationUser andreiUser = new ()
                 {
                     Email = "andreidirlea1.97@gmail.com",
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = "AndreiUser",
+                    UserName = "andreidirlea.97@gmail.com",
                 };
+                if (await userManager.FindByEmailAsync(andreiAdmin.Email) != null)
+                {
+                    await userManager.CreateAsync(andreiAdmin, "Pass123$");
+                    await userManager.AddToRoleAsync(andreiAdmin, UserRoles.Admin);
+                }
 
-                await userManager.CreateAsync(andreiAdmin, "Pass123$");
-                await userManager.AddToRoleAsync(andreiAdmin, "Administrator");
-
-                await userManager.CreateAsync(andreiUser, "Pass123$");
-                await userManager.AddToRoleAsync(andreiUser, "User");
-
-                //string[] teamMembers = { "alex", "luci", "andrei", "ovidiu", "dorin" };
-
-                //if (!await roleManager.RoleExistsAsync(UserRoles.User))
-                //    await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-                //if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
-                //    await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-
-                //foreach (var _ in teamMembers)
-                //{
-                //    var userName = "admin_" + _ + "@team2backend.ro";
-                //    var userExists = await userManager.FindByNameAsync(userName);
-                //    if (userExists == null)
-                //    {
-                //        ApplicationUser user = new ApplicationUser()
-                //        {
-                //            Email = "admin_" + _ + "@team2backend.ro",
-                //            SecurityStamp = Guid.NewGuid().ToString(),
-                //            UserName = "admin_" + _ + "@team2backend.ro",
-                //        };
-                //        await userManager.CreateAsync(user, "Pass123$");
-                //        await userManager.AddToRoleAsync(user, UserRoles.Admin);
-                //    }
-                //}
+                if (await userManager.FindByEmailAsync(andreiUser.Email) != null)
+                {
+                    await userManager.CreateAsync(andreiUser, "Pass123$");
+                    await userManager.AddToRoleAsync(andreiUser, UserRoles.User);
+                }
             }
         }
 
