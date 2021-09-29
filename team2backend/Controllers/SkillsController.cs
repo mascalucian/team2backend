@@ -58,8 +58,9 @@ namespace team2backend.Controllers
             if (!udemyCourseService.HasResults(skill.Name)) return BadRequest();
             if (ModelState.IsValid)
             {
+                var task = Task.Run(() => skillRepository.CreateNewSkill(skill));
+                await task;
                 await hub.Clients.All.SendAsync("SkillCreated", skill);
-                skillRepository.CreateNewSkill(skill);
                 return Ok();
             }
             else
