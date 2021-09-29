@@ -58,7 +58,7 @@ namespace team2backend.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, new ResponseAuth { Status = "Error", Message = "User already exists!" });
             }
 
-            ApplicationUser newUser = new ApplicationUser()
+            ApplicationUser newUser = new ()
             {
                 Email = user.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -89,8 +89,6 @@ namespace team2backend.Controllers
                 badRolesInString = badRolesInString + " " + badRole;
             }
 
-            await userManager.AddToRoleAsync(newUser, UserRoles.User);
-
             if (goodRoles.Count > 0)
             {
                 foreach (var role in goodRoles)
@@ -103,11 +101,17 @@ namespace team2backend.Controllers
             }
             else
             {
-                await userManager.AddToRoleAsync(newUser, "User");
+                await userManager.AddToRoleAsync(newUser, UserRoles.User);
             }
 
-            //var userDto = mapper.Map<ReadUserDto>(user);
-            //await hubContext.Clients.All.SendAsync("UserAdded", userDto);
+            var userDto = new ReadUserDto()
+            {
+                Id = newUser.Id,
+                UserName = newUser.UserName,
+                Email = newUser.Email,
+                Roles = goodRoles,
+            };
+            await hubContext.Clients.All.SendAsync("UserAdded", userDto);
             if (badRoles.Count == 0)
             {
                 return Ok(new ResponseAuth { Status = "Success", Message = "User created successfully!" });
