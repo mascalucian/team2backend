@@ -1,29 +1,22 @@
 using System;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using team2backend.Authentication;
 using team2backend.Data;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
+using team2backend.Helpers;
 using team2backend.Interfaces;
 using team2backend.Services;
-using team2backend.Helpers;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.HttpOverrides;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
-using IdentityServer4.AccessTokenValidation;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace team2backend
 {
@@ -45,13 +38,13 @@ namespace team2backend
             {
                 // Specify the default API Version as 1.0
                 config.DefaultApiVersion = new ApiVersion(1, 0);
+
                 // If the client hasn't specified the API version in the request, use the default API version number 
                 config.AssumeDefaultVersionWhenUnspecified = true;
                 config.ReportApiVersions = true;
-
             });
 
-            // For Entity Framework
+            // For Entity Framework.
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(GetConnectionString()));
             services.AddDatabaseDeveloperPageExceptionFilter();
@@ -125,6 +118,7 @@ namespace team2backend
                 AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<ISkillsRepository, DbSkillRepository>();
             services.AddScoped<IRecommendationsRepository, DbRecommendationRepository>();
+            services.AddScoped<IUsersRepository, DbUsersRepository>();
             services.AddSingleton<IUdemyCourseService, UdemyCourseService>();
 
             services.ConfigureApplicationCookie(options =>
@@ -145,20 +139,17 @@ namespace team2backend
             {
                 return ConvertConnectionString(connectionString);
             }
+
             return Configuration.GetConnectionString("DefaultConnection");
         }
 
         public static string ConvertConnectionString(string connectionString)
         {
-
-
-            Uri uri = new Uri(connectionString);
-
-
-
+            Uri uri = new (connectionString);
             string converted = $"Database={uri.AbsolutePath.TrimStart('/')};Host={uri.Host};Port={uri.Port};User Id={uri.UserInfo.Split(":")[0]};Password={uri.UserInfo.Split(":")[1]};SSL Mode=Require;Trust Server Certificate=true";
             return converted;
         }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
