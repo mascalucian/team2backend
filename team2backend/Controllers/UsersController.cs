@@ -58,7 +58,7 @@ namespace team2backend.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, new ResponseAuth { Status = "Error", Message = "User already exists!" });
             }
 
-            ApplicationUser newUser = new ()
+            ApplicationUser newUser = new()
             {
                 Email = user.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -152,11 +152,17 @@ namespace team2backend.Controllers
                 {
                     await userManager.AddToRoleAsync(user, role);
                 }
-
+                var userDto = new ReadUserDto()
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Roles = roles,
+                };
+                await hubContext.Clients.All.SendAsync("UserEdited", userDto);
                 return Ok();
             }
-            var userDto = mapper.Map<ReadUserDto>(user);
-            await hubContext.Clients.All.SendAsync("UserEdited", userDto);
+
             return NotFound();
         }
 
