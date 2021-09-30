@@ -109,7 +109,6 @@ namespace team2backend.Controllers
             catch (Exception)
             {
                 return BadRequest();
-
             }
         }
     }

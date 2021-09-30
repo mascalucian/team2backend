@@ -33,6 +33,19 @@ namespace team2backend.Services
 
         public async Task<AddNewUserResponse> AddNewUserWithRoles([FromBody] AddNewUser user)
         {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(user.Email);
+            }
+            catch
+            {
+                return new AddNewUserResponse
+                {
+                    User = null,
+                    Response = new () { Status = "Error", Message = "Email address is invalid!" },
+                };
+            }
+
             var userExists = await userManager.FindByEmailAsync(user.Email);
             if (userExists != null)
             {
@@ -127,7 +140,7 @@ namespace team2backend.Services
             };
         }
 
-        public async Task<ReadUserDto> DeleteUser (string id)
+        public async Task<ReadUserDto> DeleteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
             if (user != null)
