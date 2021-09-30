@@ -127,7 +127,7 @@ namespace team2backend.Services
             };
         }
 
-        public async Task<ReadUserDto> DeleteUser(string id)
+        public async Task<ReadUserDto> DeleteUser (string id)
         {
             var user = await userManager.FindByIdAsync(id);
             if (user != null)
