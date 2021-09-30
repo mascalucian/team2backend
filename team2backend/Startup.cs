@@ -44,7 +44,7 @@ namespace team2backend
                 config.ReportApiVersions = true;
             });
 
-            // For Entity Framework
+            // For Entity Framework.
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(GetConnectionString()));
             services.AddDatabaseDeveloperPageExceptionFilter();
